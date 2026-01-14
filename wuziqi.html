@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>五子棋人机对战 - 智能AI</title>
+	<style>
+		body {
+			font-family: 'Microsoft YaHei', sans-serif;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+			margin: 0;
+			padding: 20px;
+			min-height: 100vh;
+			color: white;
+		}
+
+		.container {
+			background-color: rgba(255, 255, 255, 0.1);
+			backdrop-filter: blur(10px);
+			border-radius: 15px;
+			padding: 25px;
+			box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+			max-width: 800px;
+			width: 100%;
+		}
+
+		h1 {
+			text-align: center;
+			color: white;
+			margin-bottom: 10px;
+			text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+			font-size: 2.5rem;
+		}
+
+		.subtitle {
+			text-align: center;
+			margin-bottom: 25px;
+			color: #e0e0e0;
+			font-size: 1.1rem;
+		}
+
+		.game-info {
+			margin-bottom: 20px;
+			text-align: center;
+			padding: 15px;
+			background-color: rgba(0, 0, 0, 0.2);
+			border-radius: 10px;
+		}
+
+		.board-container {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			margin-bottom: 20px;
+		}
+
+		.board {
+			width: 450px;
+			height: 450px;
+			background-color: #e6c58a;
+			border: 3px solid #8d6e28;
+			position: relative;
+			box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+			border-radius: 3px;
+		}
+
+		.line {
+			position: absolute;
+			background-color: #8d6e28;
+		}
+
+		.horizontal {
+			height: 1px;
+		}
+
+		.vertical {
+			width: 1px;
+		}
+
+		.piece {
+			position: absolute;
+			border-radius: 50%;
+			width: 28px;
+			height: 28px;
+			transform: translate(-50%, -50%);
+			z-index: 10;
+			transition: all 0.3s ease;
+		}
+
+		.black {
+			background: radial-gradient(circle at 30% 30%, #666, #000);
+			box-shadow: 0 0 8px rgba(0, 0, 0, 0.7);
+		}
+
+		.white {
+			background: radial-gradient(circle at 30% 30%, #fff, #aaa);
+			box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
+		}
+
+		.star-point {
+			position: absolute;
+			width: 8px;
+			height: 8px;
+			background-color: #8d6e28;
+			border-radius: 50%;
+			transform: translate(-50%, -50%);
+		}
+
+		.controls {
+			display: flex;
+			justify-content: center;
+			gap: 15px;
+			margin-top: 20px;
+			flex-wrap: wrap;
+		}
+
+		button {
+			padding: 12px 25px;
+			font-size: 16px;
+			background: linear-gradient(to bottom, #4CAF50, #388E3C);
+			color: white;
+			border: none;
+			border-radius: 50px;
+			cursor: pointer;
+			transition: all 0.3s;
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+			font-weight: bold;
+		}
+
+		button:hover {
+			background: linear-gradient(to bottom, #66BB6A, #4CAF50);
+			transform: translateY(-2px);
+			box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+		}
+
+		button:active {
+			transform: translateY(1px);
+			box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+		}
+
+		.status {
+			margin-top: 15px;
+			font-size: 20px;
+			font-weight: bold;
+			height: 30px;
+			text-align: center;
+			padding: 8px;
+			background-color: rgba(0, 0, 0, 0.3);
+			border-radius: 8px;
+			width: 80%;
+			color: #fff;
+			text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+		}
+
+		.ai-info {
+			margin-top: 15px;
+			text-align: center;
+			font-size: 14px;
+			color: #e0e0e0;
+			background-color: rgba(0, 0, 0, 0.2);
+			padding: 10px;
+			border-radius: 8px;
+		}
+
+		.last-move {
+			position: absolute;
+			width: 16px;
+			height: 16px;
+			border-radius: 50%;
+			background-color: red;
+			transform: translate(-50%, -50%);
+			z-index: 5;
+			opacity: 0.7;
+			animation: pulse 1.5s infinite;
+		}
+
+		@keyframes pulse {
+			0% { transform: translate(-50%, -50%) scale(1); opacity: 0.7; }
+			50% { transform: translate(-50%, -50%) scale(1.3); opacity: 0.4; }
+			100% { transform: translate(-50%, -50%) scale(1); opacity: 0.7; }
+		}
+
+		.win-line {
+			position: absolute;
+			background-color: red;
+			height: 4px;
+			transform-origin: 0 0;
+			z-index: 9;
+		}
+	</style>
+</head>
+<body>
+	<div class="container">
+		<h1>五子棋人机对战</h1>
+		<div class="subtitle">挑战智能AI - 体验高难度五子棋对战</div>
+		
+		<div class="game-info">
+			<p>选择你先手还是让AI先手，然后在棋盘上点击下子</p>
+			<div class="controls">
+				<button id="player-first">我先手(黑棋)</button>
+				<button id="ai-first">AI先手(黑棋)</button>
+				<button id="reset">重新开始</button>
+			</div>
+		</div>
+		
+		<div class="board-container">
+			<div class="status" id="status">等待选择先手</div>
+			<div class="board" id="board"></div>
+		</div>
+		
+		<div class="ai-info">
+			<p>AI已优化：具备强大的进攻和防守能力，能够识别并堵截玩家的棋形</p>
+		</div>
+	</div>
+
+	<script>
+		const BOARD_SIZE = 15;
+		const CELL_SIZE = 30;
+		const PLAYER = 1; // 黑棋
+		const AI = 2;     // 白棋
+
+		let board = [];
+		let currentPlayer = PLAYER;
+		let gameOver = false;
+		let playerFirst = true;
+		let lastMove = null;
+		let winLine = null;
+
+		const boardElement = document.getElementById('board');
+		const statusElement = document.getElementById('status');
+		const resetButton = document.getElementById('reset');
+		const playerFirstButton = document.getElementById('player-first');
+		const aiFirstButton = document.getElementById('ai-first');
+
+		function initGame() {
+			boardElement.innerHTML = '';
+			board = Array(BOARD_SIZE).fill().map(() => Array(BOARD_SIZE).fill(0));
+			currentPlayer = playerFirst ? PLAYER : AI;
+			gameOver = false;
+			lastMove = null;
+
+			for (let i = 0; i < BOARD_SIZE; i++) {
+				const horizontalLine = document.createElement('div');
+				horizontalLine.className = 'line horizontal';
+				horizontalLine.style.top = (i * CELL_SIZE + CELL_SIZE / 2) + 'px';
+				horizontalLine.style.width = (BOARD_SIZE * CELL_SIZE) + 'px';
+				boardElement.appendChild(horizontalLine);
+
+				const verticalLine = document.createElement('div');
+				verticalLine.className = 'line vertical';
+				verticalLine.style.left = (i * CELL_SIZE + CELL_SIZE / 2) + 'px';
+				verticalLine.style.height = (BOARD_SIZE * CELL_SIZE) + 'px';
+				boardElement.appendChild(verticalLine);
+			}
+
+			const starPoints = [
+				{x: 3, y: 3}, {x: 11, y: 3}, {x: 7, y: 7},
+				{x: 3, y: 11}, {x: 11, y: 11}
+			];
+
+			starPoints.forEach(point => {
+				const starPoint = document.createElement('div');
+				starPoint.className = 'star-point';
+				starPoint.style.left = (point.x * CELL_SIZE + CELL_SIZE / 2) + 'px';
+				starPoint.style.top = (point.y * CELL_SIZE + CELL_SIZE / 2) + 'px';
+				boardElement.appendChild(starPoint);
+			});
+
+			statusElement.textContent = playerFirst ? "你的回合(黑棋)" : "AI的回合(黑棋)";
+
+			if (!playerFirst && !gameOver) {
+				setTimeout(makeAIMove, 500);
+			}
+		}
+
+		boardElement.addEventListener('click', (event) => {
+			if (gameOver || currentPlayer !== PLAYER) return;
+
+			const rect = boardElement.getBoundingClientRect();
+			const x = Math.floor((event.clientX - rect.left) / CELL_SIZE);
+			const y = Math.floor((event.clientY - rect.top) / CELL_SIZE);
+
+			if (x >= 0 && x < BOARD_SIZE && y >= 0 && y < BOARD_SIZE && board[y][x] === 0) {
+				makeMove(x, y);
+
+				if (!gameOver) {
+					currentPlayer = AI;
+					statusElement.textContent = "AI思考中...";
+					setTimeout(makeAIMove, 500);
+				}
+			}
+		});
+
+		resetButton.addEventListener('click', () => {
+			playerFirst = true;
+			initGame();
+		});
+
+		playerFirstButton.addEventListener('click', () => {
+			playerFirst = true;
+			initGame();
+		});
+
+		aiFirstButton.addEventListener('click', () => {
+			playerFirst = false;
+			initGame();
+		});
+
+		function makeMove(x, y) {
+			board[y][x] = currentPlayer;
+
+			if (lastMove) {
+				lastMove.remove();
+			}
+
+			const piece = document.createElement('div');
+			piece.className = `piece ${currentPlayer === PLAYER ? 'black' : 'white'}`;
+			piece.style.left = (x * CELL_SIZE + CELL_SIZE / 2) + 'px';
+			piece.style.top = (y * CELL_SIZE + CELL_SIZE / 2) + 'px';
+			boardElement.appendChild(piece);
+
+			lastMove = document.createElement('div');
+			lastMove.className = 'last-move';
+			lastMove.style.left = (x * CELL_SIZE + CELL_SIZE / 2) + 'px';
+			lastMove.style.top = (y * CELL_SIZE + CELL_SIZE / 2) + 'px';
+			boardElement.appendChild(lastMove);
+
+			const winResult = isGameWon(currentPlayer);
+			if (winResult) {
+				gameOver = true;
+				drawWinLine(winResult);
+				statusElement.textContent = currentPlayer === PLAYER ? "恭喜你赢了！" : "AI赢了！";
+				return;
+			}
+
+			if (isBoardFull()) {
+				gameOver = true;
+				statusElement.textContent = "平局！";
+				return;
+			}
+
+			currentPlayer = currentPlayer === PLAYER ? AI : PLAYER;
+			statusElement.textContent = currentPlayer === PLAYER ? "你的回合(黑棋)" : "AI思考中...";
+		}
+
+		function makeAIMove() {
+			if (gameOver) return;
+
+			const possibleMoves = getPossibleMoves();
+			let bestScore = -Infinity;
+			let bestMove = possibleMoves[0];
+
+			for (const move of possibleMoves) {
+				const { x, y } = move;
+				board[y][x] = AI;
+
+				if (isGameWon(AI)) {
+					board[y][x] = 0;
+					makeMove(x, y);
+					return;
+				}
+
+				const score = minimax(2, false, -Infinity, Infinity);
+
+				if (score > bestScore) {
+					bestScore = score;
+					bestMove = move;
+				}
+
+				board[y][x] = 0;
+			}
+
+			makeMove(bestMove.x, bestMove.y);
+		}
+
+		function minimax(depth, isMaximizing, alpha, beta) {
+			if (depth === 0) {
+				return evaluateBoard();
+			}
+
+			const possibleMoves = getPossibleMoves();
+
+			if (isMaximizing) {
+				let maxEval = -Infinity;
+
+				for (const move of possibleMoves) {
+					const { x, y } = move;
+					board[y][x] = AI;
+
+					if (isGameWon(AI)) {
+						board[y][x] = 0;
+						return 100000;
+					}
+
+					const eval = minimax(depth - 1, false, alpha, beta);
+					board[y][x] = 0;
+
+					maxEval = Math.max(maxEval, eval);
+					alpha = Math.max(alpha, eval);
+
+					if (beta <= alpha) {
+						break;
+					}
+				}
+
+				return maxEval;
+			} else {
+				let minEval = Infinity;
+
+				for (const move of possibleMoves) {
+					const { x, y } = move;
+					board[y][x] = PLAYER;
+
+					if (isGameWon(PLAYER)) {
+						board[y][x] = 0;
+						return -100000;
+					}
+
+					const eval = minimax(depth - 1, true, alpha, beta);
+					board[y][x] = 0;
+
+					minEval = Math.min(minEval, eval);
+					beta = Math.min(beta, eval);
+
+					if (beta <= alpha) {
+						break;
+					}
+				}
+
+				return minEval;
+			}
+		}
+
+		function evaluateBoard() {
+			let score = 0;
+
+			for (let y = 0; y < BOARD_SIZE; y++) {
+				for (let x = 0; x < BOARD_SIZE; x++) {
+					if (board[y][x] === AI) {
+						score += evaluatePosition(x, y, AI);
+					} else if (board[y][x] === PLAYER) {
+						score -= evaluatePosition(x, y, PLAYER) * 1.2;
+					}
+				}
+			}
+
+			return score;
+		}
+
+		function getPossibleMoves() {
+			const moves = [];
+
+			for (let y = 0; y < BOARD_SIZE; y++) {
+				for (let x = 0; x < BOARD_SIZE; x++) {
+					if (board[y][x] === 0 && hasNeighbor(x, y)) {
+						moves.push({ x, y });
+					}
+				}
+			}
+
+			if (moves.length === 0) {
+				for (let y = 0; y < BOARD_SIZE; y++) {
+					for (let x = 0; x < BOARD_SIZE; x++) {
+						if (board[y][x] === 0) {
+							moves.push({ x, y });
+						}
+					}
+				}
+			}
+
+			return moves;
+		}
+
+		function hasNeighbor(x, y) {
+			for (let dy = -2; dy <= 2; dy++) {
+				for (let dx = -2; dx <= 2; dx++) {
+					if (dx === 0 && dy === 0) continue;
+
+					const nx = x + dx;
+					const ny = y + dy;
+
+					if (nx >= 0 && nx < BOARD_SIZE && ny >= 0 && ny < BOARD_SIZE && board[ny][nx] !== 0) {
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+
+		function evaluatePosition(x, y, player) {
+			let score = 0;
+			const directions = [[0, 1], [1, 0], [1, 1], [1, -1]];
+
+			for (const [dx, dy] of directions) {
+				score += evaluateLine(x, y, dx, dy, player);
+			}
+
+			const centerX = BOARD_SIZE / 2;
+			const centerY = BOARD_SIZE / 2;
+			const distance = Math.sqrt(Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2));
+			score += Math.max(0, 50 - distance);
+
+			return score;
+		}
+
+		function evaluateLine(x, y, dx, dy, player) {
+			let score = 0;
+			let count = 1;
+			let blockCount = 0;
+			let emptyEnds = 0;
+
+			for (let i = 1; i <= 4; i++) {
+				const nx = x + dx * i;
+				const ny = y + dy * i;
+
+				if (nx < 0 || nx >= BOARD_SIZE || ny < 0 || ny >= BOARD_SIZE) {
+					blockCount++;
+					break;
+				}
+
+				if (board[ny][nx] === player) {
+					count++;
+				} else if (board[ny][nx] === 0) {
+					emptyEnds++;
+					break;
+				} else {
+					blockCount++;
+					break;
+				}
+			}
+
+			for (let i = 1; i <= 4; i++) {
+				const nx = x - dx * i;
+				const ny = y - dy * i;
+
+				if (nx < 0 || nx >= BOARD_SIZE || ny < 0 || ny >= BOARD_SIZE) {
+					blockCount++;
+					break;
+				}
+
+				if (board[ny][nx] === player) {
+					count++;
+				} else if (board[ny][nx] === 0) {
+					emptyEnds++;
+					break;
+				} else {
+					blockCount++;
+					break;
+				}
+			}
+
+			if (count >= 5) {
+				return 100000;
+			} else if (count === 4) {
+				if (blockCount === 0) return 10000;
+				if (blockCount === 1) return 1000;
+			} else if (count === 3) {
+				if (blockCount === 0) return 1000;
+				if (blockCount === 1) return 100;
+			} else if (count === 2) {
+				if (blockCount === 0) return 100;
+				if (blockCount === 1) return 10;
+			} else if (count === 1) {
+				return 1;
+			}
+
+			return 0;
+		}
+
+		function isGameWon(player) {
+			const directions = [[0, 1], [1, 0], [1, 1], [1, -1]];
+
+			for (let y = 0; y < BOARD_SIZE; y++) {
+				for (let x = 0; x < BOARD_SIZE; x++) {
+					if (board[y][x] === player) {
+						for (const [dx, dy] of directions) {
+							let count = 1;
+
+							for (let i = 1; i <= 4; i++) {
+								const nx = x + dx * i;
+								const ny = y + dy * i;
+
+								if (nx < 0 || nx >= BOARD_SIZE || ny < 0 || ny >= BOARD_SIZE || board[ny][nx] !== player) {
+									break;
+								}
+								count++;
+							}
+
+							for (let i = 1; i <= 4; i++) {
+								const nx = x - dx * i;
+								const ny = y - dy * i;
+
+								if (nx < 0 || nx >= BOARD_SIZE || ny < 0 || ny >= BOARD_SIZE || board[ny][nx] !== player) {
+									break;
+								}
+								count++;
+							}
+
+							if (count >= 5) {
+								return {
+									x: x,
+									y: y,
+									dx: dx,
+									dy: dy,
+									length: count
+								};
+							}
+						}
+					}
+				}
+			}
+
+			return false;
+		}
+
+		function drawWinLine(winResult) {
+			const { x, y, dx, dy, length } = winResult;
+
+			let startX = x;
+			let startY = y;
+			let endX = x;
+			let endY = y;
+
+			for (let i = 1; i < 5; i++) {
+				const nx = x + dx * i;
+				const ny = y + dy * i;
+
+				if (nx < 0 || nx >= BOARD_SIZE || ny < 0 || ny >= BOARD_SIZE || board[ny][nx] !== currentPlayer) {
+					break;
+				}
+				endX = nx;
+				endY = ny;
+			}
+
+			for (let i = 1; i < 5; i++) {
+				const nx = x - dx * i;
+				const ny = y - dy * i;
+
+				if (nx < 0 || nx >= BOARD_SIZE || ny < 0 || ny >= BOARD_SIZE || board[ny][nx] !== currentPlayer) {
+					break;
+				}
+				startX = nx;
+				startY = ny;
+			}
+
+			winLine = document.createElement('div');
+			winLine.className = 'win-line';
+
+			const startLeft = startX * CELL_SIZE + CELL_SIZE / 2;
+			const startTop = startY * CELL_SIZE + CELL_SIZE / 2;
+			const endLeft = endX * CELL_SIZE + CELL_SIZE / 2;
+			const endTop = endY * CELL_SIZE + CELL_SIZE / 2;
+
+			const lineLength = Math.sqrt(Math.pow(endLeft - startLeft, 2) + Math.pow(endTop - startTop, 2));
+			const angle = Math.atan2(endTop - startTop, endLeft - startLeft) * 180 / Math.PI;
+
+			winLine.style.width = lineLength + 'px';
+			winLine.style.left = startLeft + 'px';
+			winLine.style.top = startTop + 'px';
+			winLine.style.transform = `rotate(${angle}deg)`;
+
+			boardElement.appendChild(winLine);
+		}
+
+		function isBoardFull() {
+			for (let y = 0; y < BOARD_SIZE; y++) {
+				for (let x = 0; x < BOARD_SIZE; x++) {
+					if (board[y][x] === 0) {
+						return false;
+					}
+				}
+			}
+			return true;
+		}
+
+		initGame();
+	</script>
+</body>
+</html>
