@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>在线游戏 - 我的个人主页</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+			font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+		}
+		
+		body {
+			background-color: #f5f7fa;
+			color: #333;
+			line-height: 1.6;
+		}
+		
+		/* 导航栏样式 */
+		header {
+			background: linear-gradient(135deg, #1a2a6c, #3a7bd5);
+			color: white;
+			padding: 1rem 0;
+			position: sticky;
+			top: 0;
+			z-index: 100;
+			box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+		}
+		
+		.container {
+			width: 90%;
+			max-width: 1200px;
+			margin: 0 auto;
+		}
+		
+		nav {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+		}
+		
+		.logo {
+			font-size: 1.8rem;
+			font-weight: 700;
+			display: flex;
+			align-items: center;
+		}
+		
+		.logo i {
+			margin-right: 10px;
+			color: #ffd166;
+		}
+		
+		.nav-links {
+			display: flex;
+			list-style: none;
+		}
+		
+		.nav-links li {
+			margin-left: 1.8rem;
+		}
+		
+		.nav-links a {
+			color: white;
+			text-decoration: none;
+			font-weight: 500;
+			padding: 0.5rem 0.8rem;
+			border-radius: 4px;
+			transition: all 0.3s ease;
+			display: flex;
+			align-items: center;
+		}
+		
+		.nav-links a i {
+			margin-right: 8px;
+			font-size: 1.1rem;
+		}
+		
+		.nav-links a:hover {
+			background-color: rgba(255, 255, 255, 0.15);
+			transform: translateY(-2px);
+		}
+		
+		.nav-links a.active {
+			background-color: rgba(255, 255, 255, 0.2);
+		}
+		
+		/* 游戏页面内容样式 */
+		.games-page {
+			padding: 2rem 0;
+		}
+		
+		.section-title {
+			text-align: center;
+			margin-bottom: 2rem;
+			color: #2c3e50;
+			position: relative;
+		}
+		
+		.section-title:after {
+			content: '';
+			position: absolute;
+			width: 80px;
+			height: 4px;
+			background: linear-gradient(to right, #3a7bd5, #00d2ff);
+			bottom: -10px;
+			left: 50%;
+			transform: translateX(-50%);
+			border-radius: 2px;
+		}
+		
+		.section-subtitle {
+			text-align: center;
+			margin-bottom: 1.5rem;
+			color: #3a7bd5;
+			font-size: 1.2rem;
+		}
+		
+		.section-description {
+			text-align: center;
+			margin-bottom: 2.5rem;
+			color: #666;
+			max-width: 800px;
+			margin-left: auto;
+			margin-right: auto;
+		}
+		
+		/* 原创游戏部分 */
+		.original-games {
+			background-color: white;
+			padding: 3rem 0;
+			border-radius: 10px;
+			margin-bottom: 3rem;
+			box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+		}
+		
+		.games-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+			gap: 2rem;
+			margin-top: 2rem;
+		}
+		
+		.game-card {
+			background: white;
+			border-radius: 10px;
+			padding: 2rem;
+			text-align: center;
+			box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+			transition: all 0.3s ease;
+			border: 1px solid #eaeaea;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			min-height: 280px;
+		}
+		
+		.game-card:hover {
+			transform: translateY(-10px);
+			box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+		}
+		
+		.game-icon {
+			width: 100px;
+			height: 100px;
+			border-radius: 50%;
+			background: linear-gradient(135deg, #3a7bd5, #00d2ff);
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			margin-bottom: 1.5rem;
+			overflow: hidden;
+			border: 3px solid white;
+			box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+		}
+		
+		.game-icon i {
+			font-size: 3rem;
+			color: white;
+		}
+		
+		.game-card h3 {
+			margin-bottom: 1rem;
+			color: #2c3e50;
+			font-size: 1.5rem;
+		}
+		
+		.game-card p {
+			color: #666;
+			margin-bottom: 1.5rem;
+			line-height: 1.5;
+		}
+		
+		.btn {
+			display: inline-block;
+			padding: 0.7rem 1.8rem;
+			background: linear-gradient(to right, #3a7bd5, #00d2ff);
+			color: white;
+			text-decoration: none;
+			border-radius: 30px;
+			font-weight: 600;
+			transition: all 0.3s ease;
+			border: none;
+			cursor: pointer;
+		}
+		
+		.btn:hover {
+			transform: translateY(-3px);
+			box-shadow: 0 7px 15px rgba(58, 123, 213, 0.3);
+		}
+		
+		/* 游戏直达部分 */
+		.game-links {
+			padding: 3rem 0;
+			background-color: #f8f9fa;
+			border-radius: 10px;
+		}
+		
+		.game-categories {
+			display: flex;
+			justify-content: center;
+			flex-wrap: wrap;
+			gap: 1rem;
+			margin-bottom: 2rem;
+		}
+		
+		.category-btn {
+			padding: 0.7rem 1.5rem;
+			background-color: white;
+			border: 2px solid #3a7bd5;
+			color: #3a7bd5;
+			border-radius: 30px;
+			font-weight: 600;
+			cursor: pointer;
+			transition: all 0.3s ease;
+		}
+		
+		.category-btn.active, .category-btn:hover {
+			background-color: #3a7bd5;
+			color: white;
+		}
+		
+		.game-links-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+			gap: 1.5rem;
+		}
+		
+		.game-link-card {
+			background: white;
+			border-radius: 10px;
+			padding: 1.5rem;
+			box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+			transition: all 0.3s ease;
+			display: flex;
+			align-items: center;
+			border-left: 4px solid #3a7bd5;
+		}
+		
+		.game-link-card:hover {
+			transform: translateY(-5px);
+			box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+		}
+		
+		.game-link-icon {
+			width: 50px;
+			height: 50px;
+			border-radius: 10px;
+			background: linear-gradient(135deg, #3a7bd5, #00d2ff);
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			margin-right: 1rem;
+			flex-shrink: 0;
+		}
+		
+		.game-link-icon i {
+			font-size: 1.5rem;
+			color: white;
+		}
+		
+		.game-link-content {
+			flex: 1;
+		}
+		
+		.game-link-content h4 {
+			margin-bottom: 0.5rem;
+			color: #2c3e50;
+		}
+		
+		.game-link-content p {
+			color: #666;
+			font-size: 0.9rem;
+			margin-bottom: 0.5rem;
+		}
+		
+		.game-link-btn {
+			display: inline-block;
+			padding: 0.4rem 1rem;
+			background-color: #f0f7ff;
+			color: #3a7bd5;
+			text-decoration: none;
+			border-radius: 4px;
+			font-size: 0.9rem;
+			font-weight: 500;
+			transition: all 0.3s ease;
+		}
+		
+		.game-link-btn:hover {
+			background-color: #3a7bd5;
+			color: white;
+		}
+		
+		/* 页脚样式 */
+		footer {
+			background-color: #2c3e50;
+			color: white;
+			padding: 2.5rem 0;
+			text-align: center;
+			margin-top: 3rem;
+		}
+		
+		.footer-content {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+		}
+		
+		.social-links {
+			display: flex;
+			gap: 1.5rem;
+			margin: 1.5rem 0;
+		}
+		
+		.social-links a {
+			color: white;
+			font-size: 1.5rem;
+			transition: color 0.3s ease;
+		}
+		
+		.social-links a:hover {
+			color: #00d2ff;
+		}
+		
+		.copyright {
+			margin-top: 1.5rem;
+			color: #bdc3c7;
+			font-size: 0.9rem;
+		}
+		
+		/* 响应式设计 */
+		@media (max-width: 768px) {
+			.nav-links {
+				display: none;
+			}
+			
+			.logo {
+				font-size: 1.5rem;
+			}
+			
+			.game-card {
+				padding: 1.5rem;
+			}
+			
+			.games-grid {
+				grid-template-columns: 1fr;
+			}
+			
+			.game-links-grid {
+				grid-template-columns: 1fr;
+			}
+			
+			.game-categories {
+				flex-wrap: wrap;
+			}
+			
+			.category-btn {
+				margin-bottom: 0.5rem;
+			}
+		}
+		
+		/* 汉堡菜单样式（移动端） */
+		.menu-toggle {
+			display: none;
+			font-size: 1.5rem;
+			cursor: pointer;
+		}
+		
+		@media (max-width: 768px) {
+			.menu-toggle {
+				display: block;
+			}
+			
+			.nav-links.active {
+				display: flex;
+				flex-direction: column;
+				position: absolute;
+				top: 100%;
+				left: 0;
+				right: 0;
+				background-color: #1a2a6c;
+				padding: 1rem;
+				border-top: 1px solid rgba(255, 255, 255, 0.1);
+				box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+			}
+			
+			.nav-links.active li {
+				margin: 0.5rem 0;
+			}
+		}
+		
+		/* 自定义图标样式 */
+		.icon-maze {
+			background: linear-gradient(135deg, #ff7e5f, #feb47b) !important;
+		}
+		
+		.icon-cats {
+			background: linear-gradient(135deg, #8a2387, #f27121) !important;
+		}
+		
+		.icon-chess {
+			background: linear-gradient(135deg, #1d976c, #93f9b9) !important;
+		}
+	</style>
+</head>
+<body>
+	<!-- 导航栏 -->
+	<header>
+		<div class="container">
+			<nav>
+				<div class="logo">
+					<i class="fas fa-gamepad"></i>
+					我的个人主页
+				</div>
+				<div class="menu-toggle" id="menuToggle">
+					<i class="fas fa-bars"></i>
+				</div>
+				<ul class="nav-links" id="navLinks">
+					<li><a href="index.html"><i class="fas fa-home"></i> 首页</a></li>
+					<li><a href="apps.html"><i class="fas fa-mobile-alt"></i> 常用软件</a></li>
+					<li><a href="tools.html"><i class="fas fa-tools"></i> 在线工具</a></li>
+					<li><a href="games.html" class="active"><i class="fas fa-gamepad"></i> 在线游戏</a></li>
+					<li><a href="https://github.com" target="_blank"><i class="fab fa-github"></i> 开发工具</a></li>
+				</ul>
+			</nav>
+		</div>
+	</header>
+
+	<!-- 游戏页面内容 -->
+	<section class="games-page">
+		<div class="container">
+			<h1 class="section-title">在线游戏中心</h1>
+			<p class="section-description">探索各种有趣的游戏，包括原创小游戏和热门在线游戏网站推荐。无论您喜欢策略游戏、休闲游戏还是动作游戏，这里都有适合您的选择。</p>
+			
+			<!-- 原创游戏部分 -->
+			<section class="original-games">
+				<h2 class="section-subtitle">原创游戏</h2>
+				<p class="section-description">这些是我们团队开发的原创游戏，完全免费，无需下载，直接在浏览器中游玩。</p>
+				
+				<div class="games-grid">
+					<div class="game-card">
+						<div class="game-icon icon-maze">
+							<i class="fas fa-dungeon"></i>
+						</div>
+						<h3>游戏迷宫打怪</h3>
+						<p>探索神秘迷宫，打败怪物，寻找宝藏！这是一款roguelike地牢探险游戏，每次游戏都会生成不同的迷宫。</p>
+						<a href="mgdg-download.html" class="btn">开始游戏</a>
+					</div>
+					
+					<div class="game-card">
+						<div class="game-icon icon-cats">
+							<i class="fas fa-cat"></i>
+						</div>
+						<h3>巧克力布丁</h3>
+						<p>帮助两只可爱的小猫制作美味的巧克力布丁！这是一款轻松有趣的烹饪模拟游戏，适合所有年龄段的玩家。</p>
+						<a href="巧克力布丁.html" class="btn">开始游戏</a>
+					</div>
+					
+					<div class="game-card">
+						<div class="game-icon icon-chess">
+							<i class="fas fa-chess-board"></i>
+						</div>
+						<h3>五子棋人机对战</h3>
+						<p>挑战人工智能的五子棋对手！选择不同难度级别，锻炼你的策略思维，享受经典棋类游戏的乐趣。</p>
+						<a href="wuziqi.html" class="btn">开始游戏</a>
+					</div>
+				</div>
+			</section>
+			
+			<!-- 游戏直达部分 -->
+			<section class="game-links">
+				<h2 class="section-subtitle">游戏直达</h2>
+				<p class="section-description">热门在线游戏网站推荐，点击即可直达。涵盖各种类型的游戏，满足不同玩家的需求。</p>
+				
+				<div class="game-categories">
+					<button class="category-btn active" data-category="all">全部游戏</button>
+					<button class="category-btn" data-category="strategy">策略游戏</button>
+					<button class="category-btn" data-category="action">动作游戏</button>
+					<button class="category-btn" data-category="puzzle">益智游戏</button>
+					<button class="category-btn" data-category="casual">休闲游戏</button>
+				</div>
+				
+				<div class="game-links-grid">
+					<!-- 策略游戏 -->
+					<div class="game-link-card" data-category="strategy">
+						<div class="game-link-icon">
+							<i class="fas fa-chess-king"></i>
+						</div>
+						<div class="game-link-content">
+							<h4>Chess.com</h4>
+							<p>全球最大的国际象棋平台，与全球玩家对弈</p>
+							<a href="https://www.chess.com" target="_blank" class="game-link-btn">访问网站</a>
+						</div>
+					</div>
+					
+					<!-- 动作游戏 -->
+					<div class="game-link-card" data-category="action">
+						<div class="game-link-icon">
+							<i class="fas fa-fighter-jet"></i>
+						</div>
+						<div class="game-link-content">
+							<h4>Krunker.io</h4>
+							<p>流行的在线第一人称射击游戏，无需下载</p>
+							<a href="https://krunker.io" target="_blank" class="game-link-btn">访问网站</a>
+						</div>
+					</div>
+					
+					<!-- 益智游戏 -->
+					<div class="game-link-card" data-category="puzzle">
+						<div class="game-link-icon">
+							<i class="fas fa-puzzle-piece"></i>
+						</div>
+						<div class="game-link-content">
+							<h4>Poki</h4>
+							<p>海量免费在线游戏，包含各种益智游戏</p>
+							<a href="https://poki.com" target="_blank" class="game-link-btn">访问网站</a>
+						</div>
+					</div>
+					
+					<!-- 休闲游戏 -->
+					<div class="game-link-card" data-category="casual">
+						<div class="game-link-icon">
+							<i class="fas fa-gamepad"></i>
+						</div>
+						<div class="game-link-content">
+							<h4>Coolmath Games</h4>
+							<p>有趣的数学和逻辑游戏，适合所有年龄段</p>
+							<a href="https://www.coolmathgames.com" target="_blank" class="game-link-btn">访问网站</a>
+						</div>
+					</div>
+					
+					<!-- 策略游戏 -->
+					<div class="game-link-card" data-category="strategy">
+						<div class="game-link-icon">
+							<i class="fas fa-dice"></i>
+						</div>
+						<div class="game-link-content">
+							<h4>Board Game Arena</h4>
+							<p>在线桌游平台，数百种策略桌游任你选</p>
+							<a href="https://boardgamearena.com" target="_blank" class="game-link-btn">访问网站</a>
+						</div>
+					</div>
+					
+					<!-- 动作游戏 -->
+					<div class="game-link-card" data-category="action">
+						<div class="game-link-icon">
+							<i class="fas fa-running"></i>
+						</div>
+						<div class="game-link-content">
+							<h4>Shell Shockers</h4>
+							<p>有趣的鸡蛋主题射击游戏，简单易上手</p>
+							<a href="https://shellshock.io" target="_blank" class="game-link-btn">访问网站</a>
+						</div>
+					</div>
+					
+					<!-- 益智游戏 -->
+					<div class="game-link-card" data-category="puzzle">
+						<div class="game-link-icon">
+							<i class="fas fa-brain"></i>
+						</div>
+						<div class="game-link-content">
+							<h4>Neal.fun</h4>
+							<p>创意互动网页游戏，激发你的想象力</p>
+							<a href="https://neal.fun" target="_blank" class="game-link-btn">访问网站</a>
+						</div>
+					</div>
+					
+					<!-- 休闲游戏 -->
+					<div class="game-link-card" data-category="casual">
+						<div class="game-link-icon">
+							<i class="fas fa-dog"></i>
+						</div>
+						<div class="game-link-content">
+							<h4>Nintendo Online Games</h4>
+							<p>任天堂经典游戏的在线版本，充满回忆</p>
+							<a href="https://www.nintendo.com/switch/online-service/" target="_blank" class="game-link-btn">访问网站</a>
+						</div>
+					</div>
+				</div>
+			</section>
+		</div>
+	</section>
+
+	<!-- 页脚 -->
+	<footer>
+		<div class="container">
+			<div class="footer-content">
+				<div class="logo">
+					<i class="fas fa-gamepad"></i>
+					我的个人主页
+				</div>
+				<p>探索知识，分享技术，享受游戏乐趣</p>
+				<div class="social-links">
+					<a href="#"><i class="fab fa-github"></i></a>
+					<a href="#"><i class="fab fa-weibo"></i></a>
+					<a href="#"><i class="fab fa-weixin"></i></a>
+					<a href="#"><i class="fas fa-envelope"></i></a>
+				</div>
+				<div class="copyright">
+					&copy; 2023 我的个人主页. 保留所有权利.
+				</div>
+			</div>
+		</div>
+	</footer>
+
+	<script>
+		// 游戏分类筛选功能
+		const categoryBtns = document.querySelectorAll('.category-btn');
+		const gameLinkCards = document.querySelectorAll('.game-link-card');
+		
+		categoryBtns.forEach(btn => {
+			btn.addEventListener('click', () => {
+				// 移除所有按钮的active类
+				categoryBtns.forEach(b => b.classList.remove('active'));
+				// 给当前点击的按钮添加active类
+				btn.classList.add('active');
+				
+				const category = btn.getAttribute('data-category');
+				
+				// 筛选游戏卡片
+				gameLinkCards.forEach(card => {
+					if (category === 'all' || card.getAttribute('data-category') === category) {
+						card.style.display = 'flex';
+					} else {
+						card.style.display = 'none';
+					}
+				});
+			});
+		});
+		
+		// 移动端菜单切换
+		const menuToggle = document.getElementById('menuToggle');
+		const navLinks = document.getElementById('navLinks');
+		
+		menuToggle.addEventListener('click', () => {
+			navLinks.classList.toggle('active');
+		});
+		
+		// 点击导航链接后关闭移动端菜单
+		document.querySelectorAll('.nav-links a').forEach(link => {
+			link.addEventListener('click', () => {
+				navLinks.classList.remove('active');
+			});
+		});
+		
+		// 模拟页面加载效果
+		window.addEventListener('load', () => {
+			document.body.style.opacity = '0';
+			document.body.style.transition = 'opacity 0.5s ease';
+			
+			setTimeout(() => {
+				document.body.style.opacity = '1';
+			}, 100);
+		});
+	</script>
+</body>
+</html>
