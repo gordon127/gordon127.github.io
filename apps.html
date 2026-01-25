@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>常用软件 - 我的个人主页</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+			font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+		}
+		
+		body {
+			background-color: #f5f7fa;
+			color: #333;
+			line-height: 1.6;
+		}
+		
+		/* 导航栏样式 */
+		header {
+			background: linear-gradient(135deg, #1a2a6c, #3a7bd5);
+			color: white;
+			padding: 1rem 0;
+			position: sticky;
+			top: 0;
+			z-index: 100;
+			box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+		}
+		
+		.container {
+			width: 90%;
+			max-width: 1200px;
+			margin: 0 auto;
+		}
+		
+		nav {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+		}
+		
+		.logo {
+			font-size: 1.8rem;
+			font-weight: 700;
+			display: flex;
+			align-items: center;
+		}
+		
+		.logo i {
+			margin-right: 10px;
+			color: #ffd166;
+		}
+		
+		.nav-links {
+			display: flex;
+			list-style: none;
+		}
+		
+		.nav-links li {
+			margin-left: 1.8rem;
+		}
+		
+		.nav-links a {
+			color: white;
+			text-decoration: none;
+			font-weight: 500;
+			padding: 0.5rem 0.8rem;
+			border-radius: 4px;
+			transition: all 0.3s ease;
+			display: flex;
+			align-items: center;
+		}
+		
+		.nav-links a i {
+			margin-right: 8px;
+			font-size: 1.1rem;
+		}
+		
+		.nav-links a:hover {
+			background-color: rgba(255, 255, 255, 0.15);
+			transform: translateY(-2px);
+		}
+		
+		.nav-links a.active {
+			background-color: rgba(255, 255, 255, 0.2);
+		}
+		
+		/* 软件页面内容样式 */
+		.apps-page {
+			padding: 2rem 0;
+		}
+		
+		.section-title {
+			text-align: center;
+			margin-bottom: 2rem;
+			color: #2c3e50;
+			position: relative;
+		}
+		
+		.section-title:after {
+			content: '';
+			position: absolute;
+			width: 80px;
+			height: 4px;
+			background: linear-gradient(to right, #3a7bd5, #00d2ff);
+			bottom: -10px;
+			left: 50%;
+			transform: translateX(-50%);
+			border-radius: 2px;
+		}
+		
+		.section-subtitle {
+			text-align: center;
+			margin-bottom: 1.5rem;
+			color: #3a7bd5;
+			font-size: 1.2rem;
+		}
+		
+		.section-description {
+			text-align: center;
+			margin-bottom: 2.5rem;
+			color: #666;
+			max-width: 800px;
+			margin-left: auto;
+			margin-right: auto;
+		}
+		
+		/* 软件分类部分 */
+		.apps-categories {
+			display: flex;
+			justify-content: center;
+			flex-wrap: wrap;
+			gap: 1rem;
+			margin-bottom: 3rem;
+		}
+		
+		.category-btn {
+			padding: 0.7rem 1.5rem;
+			background-color: white;
+			border: 2px solid #3a7bd5;
+			color: #3a7bd5;
+			border-radius: 30px;
+			font-weight: 600;
+			cursor: pointer;
+			transition: all 0.3s ease;
+		}
+		
+		.category-btn.active, .category-btn:hover {
+			background-color: #3a7bd5;
+			color: white;
+		}
+		
+		/* 软件网格 */
+		.apps-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+			gap: 2rem;
+			margin-bottom: 4rem;
+		}
+		
+		.app-card {
+			background: white;
+			border-radius: 12px;
+			padding: 1.8rem;
+			box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+			transition: all 0.3s ease;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			text-align: center;
+			border-top: 4px solid #3a7bd5;
+		}
+		
+		.app-card:hover {
+			transform: translateY(-10px);
+			box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+		}
+		
+		.app-icon {
+			width: 80px;
+			height: 80px;
+			border-radius: 20px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			margin-bottom: 1.5rem;
+			font-size: 2.5rem;
+			color: white;
+			box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+		}
+		
+		.app-card h3 {
+			margin-bottom: 0.8rem;
+			color: #2c3e50;
+			font-size: 1.4rem;
+		}
+		
+		.app-card p {
+			color: #666;
+			margin-bottom: 1.5rem;
+			font-size: 0.95rem;
+			line-height: 1.5;
+			flex-grow: 1;
+		}
+		
+		.app-platforms {
+			display: flex;
+			gap: 0.5rem;
+			margin-bottom: 1.5rem;
+			flex-wrap: wrap;
+			justify-content: center;
+		}
+		
+		.platform-tag {
+			padding: 0.3rem 0.8rem;
+			background-color: #f0f7ff;
+			color: #3a7bd5;
+			border-radius: 20px;
+			font-size: 0.8rem;
+			font-weight: 500;
+		}
+		
+		.app-btn {
+			display: inline-block;
+			width: 100%;
+			padding: 0.8rem;
+			background: linear-gradient(to right, #3a7bd5, #00d2ff);
+			color: white;
+			text-decoration: none;
+			border-radius: 8px;
+			font-weight: 600;
+			transition: all 0.3s ease;
+			text-align: center;
+		}
+		
+		.app-btn:hover {
+			transform: translateY(-3px);
+			box-shadow: 0 7px 15px rgba(58, 123, 213, 0.3);
+		}
+		
+		/* 特色推荐部分 */
+		.featured-apps {
+			background: linear-gradient(135deg, #1a2a6c, #3a7bd5);
+			color: white;
+			padding: 3rem 0;
+			border-radius: 15px;
+			margin-bottom: 3rem;
+		}
+		
+		.featured-apps .section-subtitle {
+			color: white;
+		}
+		
+		.featured-apps .section-description {
+			color: rgba(255, 255, 255, 0.9);
+		}
+		
+		.featured-apps-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+			gap: 2rem;
+			margin-top: 2rem;
+		}
+		
+		.featured-app-card {
+			background: rgba(255, 255, 255, 0.1);
+			border-radius: 12px;
+			padding: 2rem;
+			backdrop-filter: blur(10px);
+			border: 1px solid rgba(255, 255, 255, 0.2);
+			transition: all 0.3s ease;
+		}
+		
+		.featured-app-card:hover {
+			background: rgba(255, 255, 255, 0.15);
+			transform: translateY(-5px);
+		}
+		
+		.featured-app-card h3 {
+			margin-bottom: 1rem;
+			display: flex;
+			align-items: center;
+			font-size: 1.5rem;
+		}
+		
+		.featured-app-card h3 i {
+			margin-right: 10px;
+			font-size: 1.8rem;
+		}
+		
+		.featured-app-card p {
+			margin-bottom: 1.5rem;
+			color: rgba(255, 255, 255, 0.9);
+		}
+		
+		/* 页脚样式 */
+		footer {
+			background-color: #2c3e50;
+			color: white;
+			padding: 2.5rem 0;
+			text-align: center;
+			margin-top: 3rem;
+		}
+		
+		.footer-content {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+		}
+		
+		.copyright {
+			margin-top: 1.5rem;
+			color: #bdc3c7;
+			font-size: 0.9rem;
+		}
+		
+		/* 响应式设计 */
+		@media (max-width: 768px) {
+			.nav-links {
+				display: none;
+			}
+			
+			.logo {
+				font-size: 1.5rem;
+			}
+			
+			.apps-grid {
+				grid-template-columns: 1fr;
+			}
+			
+			.apps-categories {
+				flex-wrap: wrap;
+			}
+			
+			.category-btn {
+				margin-bottom: 0.5rem;
+			}
+			
+			.featured-apps-grid {
+				grid-template-columns: 1fr;
+			}
+		}
+		
+		/* 汉堡菜单样式（移动端） */
+		.menu-toggle {
+			display: none;
+			font-size: 1.5rem;
+			cursor: pointer;
+		}
+		
+		@media (max-width: 768px) {
+			.menu-toggle {
+				display: block;
+			}
+			
+			.nav-links.active {
+				display: flex;
+				flex-direction: column;
+				position: absolute;
+				top: 100%;
+				left: 0;
+				right: 0;
+				background-color: #1a2a6c;
+				padding: 1rem;
+				border-top: 1px solid rgba(255, 255, 255, 0.1);
+				box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+			}
+			
+			.nav-links.active li {
+				margin: 0.5rem 0;
+			}
+		}
+		
+		/* 软件图标颜色 */
+		.wechat-bg { background: linear-gradient(135deg, #07C160, #09D66C); }
+		.wps-bg { background: linear-gradient(135deg, #1E6EEB, #3A8BFF); }
+		.chrome-bg { background: linear-gradient(135deg, #EA4335, #FBBC05); }
+		.office-bg { background: linear-gradient(135deg, #D83B01, #F25022); }
+		.qq-bg { background: linear-gradient(135deg, #12B7F5, #4AC0FF); }
+		.baidu-bg { background: linear-gradient(135deg, #2932E1, #3B44FF); }
+		.foxmail-bg { background: linear-gradient(135deg, #F7B500, #FFC62F); }
+		.photoshop-bg { background: linear-gradient(135deg, #001E36, #31A8FF); }
+		.notepad-bg { background: linear-gradient(135deg, #1E6EEB, #3A8BFF); }
+		.potplayer-bg { background: linear-gradient(135deg, #888888, #AAAAAA); }
+		.bandizip-bg { background: linear-gradient(135deg, #FF6B6B, #FF8E8E); }
+		.everything-bg { background: linear-gradient(135deg, #4A4A4A, #6A6A6A); }
+		.vscode-bg { background: linear-gradient(135deg, #007ACC, #0098FF); }
+		.teamviewer-bg { background: linear-gradient(135deg, #0E8EEB, #1FA1FF); }
+		.winrar-bg { background: linear-gradient(135deg, #205DA5, #2B7AD6); }
+	</style>
+</head>
+<body>
+	<!-- 导航栏 -->
+	<header>
+		<div class="container">
+			<nav>
+				<div class="logo">
+					<i class="fas fa-mobile-alt"></i>
+					我的个人主页
+				</div>
+				<div class="menu-toggle" id="menuToggle">
+					<i class="fas fa-bars"></i>
+				</div>
+				<ul class="nav-links" id="navLinks">
+					<li><a href="index.html"><i class="fas fa-home"></i> 首页</a></li>
+					<li><a href="apps.html" class="active"><i class="fas fa-mobile-alt"></i> 常用软件</a></li>
+					<li><a href="tools.html"><i class="fas fa-tools"></i> 在线工具</a></li>
+					<li><a href="games.html"><i class="fas fa-gamepad"></i> 在线游戏</a></li>
+					<li><a href="https://github.com" target="_blank"><i class="fab fa-github"></i> 开发工具</a></li>
+				</ul>
+			</nav>
+		</div>
+	</header>
+
+	<!-- 软件页面内容 -->
+	<section class="apps-page">
+		<div class="container">
+			<h1 class="section-title">常用软件推荐</h1>
+			<p class="section-description">这里汇集了各类常用软件，涵盖办公、社交、工具、娱乐等多个类别。所有软件均为官方正版下载链接，安全可靠。</p>
+			
+			<!-- 软件分类 -->
+			<div class="apps-categories">
+				<button class="category-btn active" data-category="all">全部软件</button>
+				<button class="category-btn" data-category="office">办公软件</button>
+				<button class="category-btn" data-category="social">社交沟通</button>
+				<button class="category-btn" data-category="tools">实用工具</button>
+				<button class="category-btn" data-category="media">影音娱乐</button>
+			</div>
+			
+			<!-- 软件网格 -->
+			<div class="apps-grid">
+				<!-- 微信 -->
+				<div class="app-card" data-category="social">
+					<div class="app-icon wechat-bg">
+						<i class="fab fa-weixin"></i>
+					</div>
+					<h3>微信</h3>
+					<p>腾讯推出的即时通讯软件，支持文字、语音、视频聊天，朋友圈分享等功能。</p>
+					<div class="app-platforms">
+						<span class="platform-tag">Windows</span>
+						<span class="platform-tag">macOS</span>
+						<span class="platform-tag">Android</span>
+						<span class="platform-tag">iOS</span>
+					</div>
+					<a href="https://weixin.qq.com/" target="_blank" class="app-btn">前往官网下载</a>
+				</div>
+				
+				<!-- WPS Office -->
+				<div class="app-card" data-category="office">
+					<div class="app-icon wps-bg">
+						<i class="fas fa-file-word"></i>
+					</div>
+					<h3>WPS Office</h3>
+					<p>金山办公软件，兼容Microsoft Office，提供文字处理、表格、演示文稿等功能。</p>
+					<div class="app-platforms">
+						<span class="platform-tag">Windows</span>
+						<span class="platform-tag">macOS</span>
+						<span class="platform-tag">Linux</span>
+						<span class="platform-tag">Android</span>
+						<span class="platform-tag">iOS</span>
+					</div>
+					<a href="https://www.wps.cn/" target="_blank" class="app-btn">前往官网下载</a>
+				</div>
+				
+				<!-- 谷歌浏览器 -->
+				<div class="app-card" data-category="tools">
+					<div class="app-icon chrome-bg">
+						<i class="fab fa-chrome"></i>
+					</div>
+					<h3>谷歌浏览器</h3>
+					<p>Google开发的网页浏览器，速度快，安全性高，支持丰富的扩展插件。</p>
+					<div class="app-platforms">
+						<span class="platform-tag">Windows</span>
+						<span class="platform-tag">macOS</span>
+						<span class="platform-tag">Linux</span>
+						<span class="platform-tag">Android</span>
+						<span class="platform-tag">iOS</span>
+					</div>
+					<a href="https://www.google.cn/intl/zh-CN/chrome/" target="_blank" class="app-btn">前往官网下载</a>
+				</div>
+				
+				<!-- Microsoft Office -->
+				<div class="app-card" data-category="office">
+					<div class="app-icon office-bg">
+						<i class="fas fa-file-excel"></i>
+					</div>
+					<h3>Microsoft Office</h3>
+					<p>微软办公套件，包含Word、Excel、PowerPoint等专业办公软件。</p>
+					<div class="app-platforms">
+						<span class="platform-tag">Windows</span>
+						<span class="platform-tag">macOS</span>
+						<span class="platform-tag">Android</span>
+						<span class="platform-tag">iOS</span>
+					</div>
+					<a href="https://www.microsoft.com/office" target="_blank" class="app-btn">前往官网下载</a>
+				</div>
+				
+				<!-- QQ -->
+				<div class="app-card" data-category="social">
+					<div class="app-icon qq-bg">
+						<i class="fab fa-qq"></i>
+					</div>
+					<h3>腾讯QQ</h3>
+					<p>腾讯推出的即时通讯软件，支持在线聊天、文件传输、QQ空间等功能。</p>
+					<div class="app-platforms">
+						<span class="platform-tag">Windows</span>
+						<span class="platform-tag">macOS</span>
+						<span class="platform-tag">Android</span>
+						<span class="platform-tag">iOS</span>
+					</div>
+					<a href="https://im.qq.com/" target="_blank" class="app-btn">前往官网下载</a>
+				</div>
+				
+				<!-- 百度网盘 -->
+				<div class="app-card" data-category="tools">
+					<div class="app-icon baidu-bg">
+						<i class="fas fa-cloud"></i>
+					</div>
+					<h3>百度网盘</h3>
+					<p>百度提供的云存储服务，支持文件同步、分享和在线预览等功能。</p>
+					<div class="app-platforms">
+						<span class="platform-tag">Windows</span>
+						<span class="platform-tag">macOS</span>
+						<span class="platform-tag">Android</span>
+						<span class="platform-tag">iOS</span>
+					</div>
+					<a href="https://pan.baidu.com/" target="_blank" class="app-btn">前往官网下载</a>
+				</div>
+				
+				<!-- Foxmail -->
+				<div class="app-card" data-category="tools">
+					<div class="app-icon foxmail-bg">
+						<i class="fas fa-envelope"></i>
+					</div>
+					<h3>Foxmail</h3>
+					<p>腾讯推出的电子邮件客户端软件，支持多账户管理，邮件分类等功能。</p>
+					<div class="app-platforms">
+						<span class="platform-tag">Windows</span>
+						<span class="platform-tag">macOS</span>
+					</div>
+					<a href="https://www.foxmail.com/" target="_blank" class="app-btn">前往官网下载</a>
+				</div>
+				
+				<!-- Photoshop -->
+				<div class="app-card" data-category="tools">
+					<div class="app-icon photoshop-bg">
+						<i class="fas fa-paint-brush"></i>
+					</div>
+					<h3>Adobe Photoshop</h3>
+					<p>Adobe公司开发的图像处理软件，广泛应用于平面设计、摄影后期等领域。</p>
+					<div class="app-platforms">
+						<span class="platform-tag">Windows</span>
+						<span class="platform-tag">macOS</span>
+					</div>
+					<a href="https://www.adobe.com/products/photoshop.html" target="_blank" class="app-btn">前往官网下载</a>
+				</div>
+			</div>
+			
+			<!-- 特色推荐部分 -->
+			<section class="featured-apps">
+				<h2 class="section-subtitle">效率工具推荐</h2>
+				<p class="section-description">这些工具可以显著提高您的工作效率，简化日常任务。</p>
+				
+				<div class="featured-apps-grid">
+					<div class="featured-app-card">
+						<h3><i class="fas fa-code notepad-bg"></i> Notepad++</h3>
+						<p>免费源代码编辑器，支持多种编程语言，具有语法高亮、代码折叠等功能。</p>
+						<a href="https://notepad-plus-plus.org/" target="_blank" class="app-btn">前往官网下载</a>
+					</div>
+					
+					<div class="featured-app-card">
+						<h3><i class="fas fa-film potplayer-bg"></i> PotPlayer</h3>
+						<p>功能强大的多媒体播放器，支持几乎所有视频格式，界面简洁，资源占用低。</p>
+						<a href="https://potplayer.daum.net/" target="_blank" class="app-btn">前往官网下载</a>
+					</div>
+					
+					<div class="featured-app-card">
+						<h3><i class="fas fa-file-archive bandizip-bg"></i> Bandizip</h3>
+						<p>轻量级压缩软件，支持多种压缩格式，速度快，界面简洁无广告。</p>
+						<a href="https://www.bandisoft.com/bandizip/" target="_blank" class="app-btn">前往官网下载</a>
+					</div>
+					
+					<div class="featured-app-card">
+						<h3><i class="fas fa-search everything-bg"></i> Everything</h3>
+						<p>Windows文件搜索工具，搜索速度极快，可以瞬间找到电脑上的任何文件。</p>
+						<a href="https://www.voidtools.com/" target="_blank" class="app-btn">前往官网下载</a>
+					</div>
+					
+					<div class="featured-app-card">
+						<h3><i class="fas fa-laptop-code vscode-bg"></i> VS Code</h3>
+						<p>微软开发的免费代码编辑器，支持多种编程语言，扩展丰富，轻量高效。</p>
+						<a href="https://code.visualstudio.com/" target="_blank" class="app-btn">前往官网下载</a>
+					</div>
+					
+					<div class="featured-app-card">
+						<h3><i class="fas fa-desktop teamviewer-bg"></i> TeamViewer</h3>
+						<p>远程控制软件，支持跨平台远程桌面控制、文件传输和在线会议等功能。</p>
+						<a href="https://www.teamviewer.com/" target="_blank" class="app-btn">前往官网下载</a>
+					</div>
+				</div>
+			</section>
+		</div>
+	</section>
+
+	<!-- 页脚 -->
+	<footer>
+		<div class="container">
+			<div class="footer-content">
+				<div class="logo">
+					<i class="fas fa-mobile-alt"></i>
+					我的个人主页
+				</div>
+				<p>探索知识，分享技术，提高效率</p>
+				<div class="copyright">
+					&copy; 2026 我的个人主页. 保留所有权利.
+				</div>
+			</div>
+		</div>
+	</footer>
+
+	<script>
+		// 软件分类筛选功能
+		const categoryBtns = document.querySelectorAll('.category-btn');
+		const appCards = document.querySelectorAll('.app-card');
+		
+		categoryBtns.forEach(btn => {
+			btn.addEventListener('click', () => {
+				// 移除所有按钮的active类
+				categoryBtns.forEach(b => b.classList.remove('active'));
+				// 给当前点击的按钮添加active类
+				btn.classList.add('active');
+				
+				const category = btn.getAttribute('data-category');
+				
+				// 筛选软件卡片
+				appCards.forEach(card => {
+					if (category === 'all' || card.getAttribute('data-category') === category) {
+						card.style.display = 'flex';
+					} else {
+						card.style.display = 'none';
+					}
+				});
+			});
+		});
+		
+		// 移动端菜单切换
+		const menuToggle = document.getElementById('menuToggle');
+		const navLinks = document.getElementById('navLinks');
+		
+		menuToggle.addEventListener('click', () => {
+			navLinks.classList.toggle('active');
+		});
+		
+		// 点击导航链接后关闭移动端菜单
+		document.querySelectorAll('.nav-links a').forEach(link => {
+			link.addEventListener('click', () => {
+				navLinks.classList.remove('active');
+			});
+		});
+		
+		// 模拟页面加载效果
+		window.addEventListener('load', () => {
+			document.body.style.opacity = '0';
+			document.body.style.transition = 'opacity 0.5s ease';
+			
+			setTimeout(() => {
+				document.body.style.opacity = '1';
+			}, 100);
+		});
+	</script>
+</body>
+</html>
