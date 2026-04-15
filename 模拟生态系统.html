@@ -1,0 +1,1859 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生态系统模拟器</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial Rounded MT Bold', 'Arial', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #e0f7fa 0%, #bbdefb 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #4CAF50;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            color: white;
+        }
+        
+        .header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 5px;
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .main-content {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .ecosystem-area {
+            flex: 2;
+            min-width: 300px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .ecosystem-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px dashed #4CAF50;
+        }
+        
+        .ecosystem-title h2 {
+            color: #2E7D32;
+            font-size: 1.8rem;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-start {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        .btn-start:hover {
+            background-color: #388E3C;
+            transform: translateY(-2px);
+        }
+        
+        .btn-reset {
+            background-color: #FF9800;
+            color: white;
+        }
+        
+        .btn-reset:hover {
+            background-color: #F57C00;
+            transform: translateY(-2px);
+        }
+        
+        .btn-analyze {
+            background-color: #2196F3;
+            color: white;
+        }
+        
+        .btn-analyze:hover {
+            background-color: #1976D2;
+            transform: translateY(-2px);
+        }
+        
+        .ecosystem-container {
+            height: 400px;
+            border: 3px dashed #81C784;
+            border-radius: 10px;
+            background-color: #F1F8E9;
+            overflow: auto;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            align-content: flex-start;
+            gap: 10px;
+        }
+        
+        .organism {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px;
+            border-radius: 10px;
+            background-color: white;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+        }
+        
+        .organism:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .organism-img {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+            margin-bottom: 5px;
+            font-size: 2.5rem;
+        }
+        
+        .organism-name {
+            font-weight: bold;
+            font-size: 0.9rem;
+            margin-bottom: 3px;
+        }
+        
+        .organism-count {
+            font-size: 1.1rem;
+            color: #4CAF50;
+            font-weight: bold;
+        }
+        
+        .charts-panel {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+        
+        .charts-title {
+            color: #2E7D32;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #C8E6C9;
+        }
+        
+        .charts-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .chart {
+            flex: 1;
+            min-width: 250px;
+            height: 200px;
+            background-color: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .chart-title {
+            font-size: 1rem;
+            color: #555;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .chart-bar-container {
+            display: flex;
+            align-items: flex-end;
+            height: 120px;
+            gap: 5px;
+            padding: 0 10px;
+        }
+        
+        .chart-bar {
+            flex: 1;
+            background-color: #4CAF50;
+            border-radius: 5px 5px 0 0;
+            min-height: 5px;
+            position: relative;
+            transition: height 1s ease;
+        }
+        
+        .chart-bar-value {
+            position: absolute;
+            top: -25px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        
+        .library-panel {
+            flex: 1;
+            min-width: 300px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .library-title {
+            color: #2E7D32;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px dashed #4CAF50;
+        }
+        
+        .organism-item {
+            display: flex;
+            align-items: center;
+            background-color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+        }
+        
+        .organism-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+        }
+        
+        .organism-icon {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+            margin-right: 15px;
+            font-size: 2.2rem;
+        }
+        
+        .organism-info {
+            flex: 1;
+        }
+        
+        .organism-name-large {
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .organism-description {
+            font-size: 0.9rem;
+            color: #666;
+            line-height: 1.4;
+        }
+        
+        .organism-controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .count-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .count-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .count-input {
+            width: 60px;
+            height: 30px;
+            text-align: center;
+            border: 2px solid #C8E6C9;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        
+        .btn-add {
+            background-color: #2196F3;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .btn-add:hover {
+            background-color: #1976D2;
+        }
+        
+        .status-panel {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+        
+        .status-title {
+            color: #2E7D32;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #C8E6C9;
+        }
+        
+        .simulation-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .info-box {
+            flex: 1;
+            min-width: 200px;
+            background-color: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .info-title {
+            font-size: 1rem;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .info-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #4CAF50;
+            text-align: center;
+        }
+        
+        .info-text {
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-align: center;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        
+        .info-stable {
+            background-color: #E8F5E9;
+            color: #2E7D32;
+        }
+        
+        .info-collapse {
+            background-color: #FFEBEE;
+            color: #C62828;
+        }
+        
+        .result-analysis {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #E3F2FD;
+            border-radius: 10px;
+            border-left: 5px solid #2196F3;
+        }
+        
+        .result-title {
+            font-size: 1.2rem;
+            color: #1976D2;
+            margin-bottom: 10px;
+        }
+        
+        .result-text {
+            line-height: 1.5;
+            color: #333;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .day-counter {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #FF9800;
+            text-align: center;
+            margin-top: 10px;
+        }
+        
+        .speed-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .speed-label {
+            font-weight: bold;
+            color: #666;
+        }
+        
+        .speed-slider {
+            flex: 1;
+            max-width: 200px;
+        }
+        
+        .speed-value {
+            font-weight: bold;
+            color: #4CAF50;
+            min-width: 60px;
+        }
+        
+        .food-chain-info {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #FFF8E1;
+            border-radius: 10px;
+            border-left: 5px solid #FFC107;
+        }
+        
+        .food-chain-title {
+            font-size: 1.1rem;
+            color: #FF8F00;
+            margin-bottom: 10px;
+        }
+        
+        .food-chain-text {
+            line-height: 1.5;
+            color: #666;
+        }
+        
+        .daily-events-panel {
+            margin-top: 20px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .daily-events-title {
+            color: #2E7D32;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #C8E6C9;
+        }
+        
+        .daily-events-list {
+            height: 300px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+        
+        .event-item {
+            padding: 8px 12px;
+            margin-bottom: 8px;
+            background-color: white;
+            border-radius: 8px;
+            border-left: 4px solid #4CAF50;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        
+        .event-day {
+            font-weight: bold;
+            color: #FF9800;
+            margin-bottom: 3px;
+        }
+        
+        .event-text {
+            color: #333;
+            line-height: 1.4;
+        }
+        
+        .collapse-notification {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #FF5252;
+            color: white;
+            padding: 30px 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            text-align: center;
+            max-width: 500px;
+            display: none;
+        }
+        
+        .collapse-title {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        
+        .collapse-reason {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        
+        .collapse-close {
+            background-color: white;
+            color: #FF5252;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        
+        .collapse-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 999;
+            display: none;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 15px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .death-conditions {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #FCE4EC;
+            border-radius: 10px;
+            border-left: 5px solid #EC407A;
+        }
+        
+        .death-conditions-title {
+            font-size: 1.1rem;
+            color: #C2185B;
+            margin-bottom: 10px;
+        }
+        
+        .death-conditions-text {
+            line-height: 1.5;
+            color: #666;
+        }
+        
+        @media (max-width: 1100px) {
+            .main-content {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 生态系统崩溃通知 -->
+    <div id="collapseOverlay" class="collapse-overlay"></div>
+    <div id="collapseNotification" class="collapse-notification">
+        <div class="collapse-title">⚠️ 生态系统崩溃！</div>
+        <div id="collapseReason" class="collapse-reason"></div>
+        <button id="collapseClose" class="collapse-close">关闭</button>
+    </div>
+    
+    <div class="container">
+        <div class="header">
+            <h1>生态系统模拟器</h1>
+            <p>探索食物链与生态平衡 </p>
+        </div>
+        
+        <div class="main-content">
+            <div class="ecosystem-area">
+                <div class="ecosystem-title">
+                    <h2>生态系统模拟区</h2>
+                    <div class="controls">
+                        <button id="startSimulation" class="btn-start">开始模拟</button>
+                        <button id="resetSimulation" class="btn-reset">重置系统</button>
+                        <button id="analyzeResult" class="btn-analyze">原因分析</button>
+                    </div>
+                </div>
+                
+                <div id="ecosystemContainer" class="ecosystem-container">
+                    <!-- 这里会动态显示添加的生物 -->
+                    <div class="empty-message">
+                        从右侧生物库中选择生物添加到生态系统中
+                    </div>
+                </div>
+                
+                <div class="speed-controls">
+                    <span class="speed-label">模拟速度:</span>
+                    <input type="range" id="speedSlider" class="speed-slider" min="100" max="2000" value="500" step="100">
+                    <span id="speedValue" class="speed-value">500ms/天</span>
+                </div>
+                
+                <div id="dayCounter" class="day-counter">第 0 天</div>
+                
+                <div class="charts-panel">
+                    <div class="charts-title">种群数量变化图</div>
+                    <div class="charts-container">
+                        <div class="chart">
+                            <div class="chart-title">🌿 草</div>
+                            <div class="chart-bar-container">
+                                <div id="grassBar" class="chart-bar" style="height: 0%;">
+                                    <div class="chart-bar-value">0</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="chart">
+                            <div class="chart-title">🐛 蚜虫</div>
+                            <div class="chart-bar-container">
+                                <div id="aphidBar" class="chart-bar" style="height: 0%;">
+                                    <div class="chart-bar-value">0</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="chart">
+                            <div class="chart-title">🐞 瓢虫</div>
+                            <div class="chart-bar-container">
+                                <div id="ladybugBar" class="chart-bar" style="height: 0%;">
+                                    <div class="chart-bar-value">0</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="chart">
+                            <div class="chart-title">🐔 鸡</div>
+                            <div class="chart-bar-container">
+                                <div id="chickenBar" class="chart-bar" style="height: 0%;">
+                                    <div class="chart-bar-value">0</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="chart">
+                            <div class="chart-title">🦅 老鹰</div>
+                            <div class="chart-bar-container">
+                                <div id="eagleBar" class="chart-bar" style="height: 0%;">
+                                    <div class="chart-bar-value">0</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="daily-events-panel">
+                    <div class="daily-events-title">📅 每日活动记录</div>
+                    <div id="dailyEventsList" class="daily-events-list">
+                        <div class="event-item">
+                            <div class="event-day">第 0 天</div>
+                            <div class="event-text">生态系统尚未开始模拟，请添加生物后点击"开始模拟"按钮。</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="library-panel">
+                <div class="library-title">生物库</div>
+                
+                <div class="organism-item">
+                    <div class="organism-icon">🌿</div>
+                    <div class="organism-info">
+                        <div class="organism-name-large">草（生产者）</div>
+                        <div class="organism-description">通过光合作用生长。每株草每天恢复1-5点健康值，健康值低于30停止繁殖。</div>
+                    </div>
+                    <div class="organism-controls">
+                        <div class="count-control">
+                            <button class="count-btn decrease" data-type="grass">-</button>
+                            <input type="number" class="count-input" id="grassCount" value="20" min="0" max="1000">
+                            <button class="count-btn increase" data-type="grass">+</button>
+                        </div>
+                        <button class="btn-add" data-type="grass">添加到生态系统</button>
+                    </div>
+                </div>
+                
+                <div class="organism-item">
+                    <div class="organism-icon">🐛</div>
+                    <div class="organism-info">
+                        <div class="organism-name-large">蚜虫（初级消费者）</div>
+                        <div class="organism-description">以草为食。每只蚜虫每天可对1株草造成1点伤害，繁殖速度快。</div>
+                    </div>
+                    <div class="organism-controls">
+                        <div class="count-control">
+                            <button class="count-btn decrease" data-type="aphid">-</button>
+                            <input type="number" class="count-input" id="aphidCount" value="5" min="0" max="1000">
+                            <button class="count-btn increase" data-type="aphid">+</button>
+                        </div>
+                        <button class="btn-add" data-type="aphid">添加到生态系统</button>
+                    </div>
+                </div>
+                
+                <div class="organism-item">
+                    <div class="organism-icon">🐞</div>
+                    <div class="organism-info">
+                        <div class="organism-name-large">瓢虫（次级消费者）</div>
+                        <div class="organism-description">捕食蚜虫。每天可捕食10-20只蚜虫，每30天繁殖一次。</div>
+                    </div>
+                    <div class="organism-controls">
+                        <div class="count-control">
+                            <button class="count-btn decrease" data-type="ladybug">-</button>
+                            <input type="number" class="count-input" id="ladybugCount" value="2" min="0" max="1000">
+                            <button class="count-btn increase" data-type="ladybug">+</button>
+                        </div>
+                        <button class="btn-add" data-type="ladybug">添加到生态系统</button>
+                    </div>
+                </div>
+                
+                <div class="organism-item">
+                    <div class="organism-icon">🐔</div>
+                    <div class="organism-info">
+                        <div class="organism-name-large">鸡（三级消费者）</div>
+                        <div class="organism-description">杂食动物。每天吃50-100只蚜虫+1-3只瓢虫，每天有50%概率产1枚蛋。</div>
+                    </div>
+                    <div class="organism-controls">
+                        <div class="count-control">
+                            <button class="count-btn decrease" data-type="chicken">-</button>
+                            <input type="number" class="count-input" id="chickenCount" value="1" min="0" max="1000">
+                            <button class="count-btn increase" data-type="chicken">+</button>
+                        </div>
+                        <button class="btn-add" data-type="chicken">添加到生态系统</button>
+                    </div>
+                </div>
+                
+                <div class="organism-item">
+                    <div class="organism-icon">🦅</div>
+                    <div class="organism-info">
+                        <div class="organism-name-large">老鹰（顶级消费者）</div>
+                        <div class="organism-description">捕食鸡。1只鸡可供1只老鹰吃3天，每年繁殖一次。</div>
+                    </div>
+                    <div class="organism-controls">
+                        <div class="count-control">
+                            <button class="count-btn decrease" data-type="eagle">-</button>
+                            <input type="number" class="count-input" id="eagleCount" value="0" min="0" max="1000">
+                            <button class="count-btn increase" data-type="eagle">+</button>
+                        </div>
+                        <button class="btn-add" data-type="eagle">添加到生态系统</button>
+                    </div>
+                </div>
+                
+                <div class="food-chain-info">
+                    <div class="food-chain-title">食物链关系</div>
+                    <div class="food-chain-text">
+                        🌿 草 → 🐛 蚜虫 → 🐞 瓢虫 → 🐔 鸡 → 🦅 老鹰<br>
+                        注意：每个消费者都依赖于其食物来源
+                    </div>
+                </div>
+                
+                <div class="death-conditions">
+                    <div class="death-conditions-title">死亡条件（新规则）</div>
+                    <div class="death-conditions-text">
+                        <strong>生态系统崩溃条件：</strong><br>
+                        1. 生产者（草）全部死亡<br>
+                        2. 所有消费者全部死亡<br><br>
+                        
+                        <strong>消费者死亡条件：</strong><br>
+                        • 蚜虫：草的数量为0<br>
+                        • 瓢虫：蚜虫数量为0<br>
+                        • 鸡：蚜虫、瓢虫数量都为0<br>
+                        • 老鹰：鸡、鸡蛋数量都为0
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="status-panel">
+            <div class="status-title">模拟状态</div>
+            <div class="simulation-info">
+                <div class="info-box">
+                    <div class="info-title">模拟天数</div>
+                    <div id="simulationDays" class="info-value">0 天</div>
+                </div>
+                <div class="info-box">
+                    <div class="info-title">系统状态</div>
+                    <div id="systemStatus" class="info-text info-stable">尚未开始</div>
+                </div>
+                <div class="info-box">
+                    <div class="info-title">预估崩溃时间</div>
+                    <div id="collapseEstimate" class="info-value">- 天</div>
+                </div>
+                <div class="info-box">
+                    <div class="info-title">生态系统稳定性</div>
+                    <div id="stability" class="info-value">-</div>
+                </div>
+            </div>
+            
+            <div id="analysisPanel" class="result-analysis hidden">
+                <div class="result-title">生态系统分析</div>
+                <div id="analysisText" class="result-text">
+                    请先运行模拟，然后点击"原因分析"按钮查看结果。
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>生态系统模拟器（小学科学版）| 专为五年级小学生设计，帮助理解食物链与生态平衡</p>
+        </div>
+    </div>
+
+    <script>
+        // 生态系统模拟器 - 小学科学版
+        class EcosystemSimulator {
+            constructor() {
+                this.organisms = {
+                    grass: { count: 0, health: [] },
+                    aphid: { count: 0 },
+                    ladybug: { count: 0, eggs: 0, hatchDays: 0 },
+                    chicken: { count: 0, eggs: 0, hatchDays: 0, chicks: 0, growthDays: 0 },
+                    eagle: { count: 0, eggs: 0, hatchDays: 0, chicks: 0, growthDays: 0 }
+                };
+                
+                this.day = 0;
+                this.maxDays = 1000;
+                this.isSimulating = false;
+                this.ecosystemHistory = [];
+                this.systemStable = false;
+                this.collapseDay = -1;
+                this.simulationInterval = null;
+                this.simulationSpeed = 500; // 默认500ms/天
+                
+                // 历史活动记录（存储所有天的活动）
+                this.historyEvents = [];
+                
+                // 崩溃原因
+                this.collapseReason = "";
+                
+                // 调试日志
+                this.debug = true;
+                
+                console.log("生态系统模拟器已初始化 - 小学科学版");
+            }
+            
+            // 重置生态系统
+            reset() {
+                this.organisms = {
+                    grass: { count: 0, health: [] },
+                    aphid: { count: 0 },
+                    ladybug: { count: 0, eggs: 0, hatchDays: 0 },
+                    chicken: { count: 0, eggs: 0, hatchDays: 0, chicks: 0, growthDays: 0 },
+                    eagle: { count: 0, eggs: 0, hatchDays: 0, chicks: 0, growthDays: 0 }
+                };
+                
+                this.day = 0;
+                this.ecosystemHistory = [];
+                this.systemStable = false;
+                this.collapseDay = -1;
+                this.historyEvents = [];
+                this.collapseReason = "";
+                
+                if (this.simulationInterval) {
+                    clearInterval(this.simulationInterval);
+                    this.simulationInterval = null;
+                }
+                
+                this.isSimulating = false;
+                
+                // 更新UI
+                this.updateUI();
+                document.getElementById('systemStatus').className = 'info-text info-stable';
+                document.getElementById('systemStatus').textContent = '尚未开始';
+                document.getElementById('collapseEstimate').textContent = '- 天';
+                document.getElementById('stability').textContent = '-';
+                document.getElementById('analysisPanel').classList.add('hidden');
+                document.getElementById('startSimulation').textContent = '开始模拟';
+                document.getElementById('dayCounter').textContent = '第 0 天';
+                
+                // 清空生态系统显示
+                const ecosystemContainer = document.getElementById('ecosystemContainer');
+                ecosystemContainer.innerHTML = '<div class="empty-message">从右侧生物库中选择生物添加到生态系统中</div>';
+                
+                // 清空活动记录
+                this.updateDailyEvents();
+                
+                // 隐藏崩溃通知
+                this.hideCollapseNotification();
+                
+                // 重置图表
+                this.updateCharts();
+                
+                if (this.debug) console.log('生态系统已重置');
+            }
+            
+            // 添加生物到生态系统
+            addOrganism(type, count) {
+                if (this.isSimulating) {
+                    alert('模拟正在进行中，请先重置系统再添加生物！');
+                    return;
+                }
+                
+                if (count <= 0) {
+                    alert('请至少添加1个生物！');
+                    return;
+                }
+                
+                if (type === 'grass') {
+                    this.organisms.grass.count += count;
+                    // 初始化草的初始健康值
+                    for (let i = 0; i < count; i++) {
+                        this.organisms.grass.health.push(100);
+                    }
+                } else {
+                    this.organisms[type].count += count;
+                }
+                
+                this.updateUI();
+                
+                if (this.debug) console.log(`添加了 ${count} 个 ${type}`);
+            }
+            
+            // 更新UI显示
+            updateUI() {
+                // 更新状态面板
+                document.getElementById('simulationDays').textContent = `${this.day} 天`;
+                
+                // 更新生态系统显示
+                this.updateEcosystemDisplay();
+                
+                // 更新图表
+                this.updateCharts();
+                
+                // 记录历史
+                this.recordHistory();
+            }
+            
+            // 更新生态系统显示
+            updateEcosystemDisplay() {
+                const ecosystemContainer = document.getElementById('ecosystemContainer');
+                
+                // 清空容器
+                ecosystemContainer.innerHTML = '';
+                
+                // 添加每种生物
+                for (const [type, data] of Object.entries(this.organisms)) {
+                    if (data.count > 0) {
+                        const organismDiv = document.createElement('div');
+                        organismDiv.className = 'organism';
+                        
+                        let organismName = '';
+                        let organismEmoji = '';
+                        
+                        switch(type) {
+                            case 'grass':
+                                organismName = '草';
+                                organismEmoji = '🌿';
+                                break;
+                            case 'aphid':
+                                organismName = '蚜虫';
+                                organismEmoji = '🐛';
+                                break;
+                            case 'ladybug':
+                                organismName = '瓢虫';
+                                organismEmoji = '🐞';
+                                break;
+                            case 'chicken':
+                                organismName = '鸡';
+                                organismEmoji = '🐔';
+                                break;
+                            case 'eagle':
+                                organismName = '老鹰';
+                                organismEmoji = '🦅';
+                                break;
+                        }
+                        
+                        organismDiv.innerHTML = `
+                            <div class="organism-img">${organismEmoji}</div>
+                            <div class="organism-name">${organismName}</div>
+                            <div class="organism-count">${data.count}</div>
+                        `;
+                        
+                        ecosystemContainer.appendChild(organismDiv);
+                    }
+                }
+                
+                // 显示鸡蛋（如果存在）
+                if (this.organisms.chicken.eggs > 0) {
+                    const eggDiv = document.createElement('div');
+                    eggDiv.className = 'organism';
+                    eggDiv.innerHTML = `
+                        <div class="organism-img">🥚</div>
+                        <div class="organism-name">鸡蛋</div>
+                        <div class="organism-count">${this.organisms.chicken.eggs}</div>
+                    `;
+                    ecosystemContainer.appendChild(eggDiv);
+                }
+                
+                // 显示瓢虫卵（如果存在）
+                if (this.organisms.ladybug.eggs > 0) {
+                    const ladybugEggDiv = document.createElement('div');
+                    ladybugEggDiv.className = 'organism';
+                    ladybugEggDiv.innerHTML = `
+                        <div class="organism-img">🥚</div>
+                        <div class="organism-name">瓢虫卵</div>
+                        <div class="organism-count">${this.organisms.ladybug.eggs}</div>
+                    `;
+                    ecosystemContainer.appendChild(ladybugEggDiv);
+                }
+                
+                // 显示老鹰卵（如果存在）
+                if (this.organisms.eagle.eggs > 0) {
+                    const eagleEggDiv = document.createElement('div');
+                    eagleEggDiv.className = 'organism';
+                    eagleEggDiv.innerHTML = `
+                        <div class="organism-img">🥚</div>
+                        <div class="organism-name">老鹰卵</div>
+                        <div class="organism-count">${this.organisms.eagle.eggs}</div>
+                    `;
+                    ecosystemContainer.appendChild(eagleEggDiv);
+                }
+                
+                // 显示小鸡（如果存在）
+                if (this.organisms.chicken.chicks > 0) {
+                    const chickDiv = document.createElement('div');
+                    chickDiv.className = 'organism';
+                    chickDiv.innerHTML = `
+                        <div class="organism-img">🐤</div>
+                        <div class="organism-name">小鸡</div>
+                        <div class="organism-count">${this.organisms.chicken.chicks}</div>
+                    `;
+                    ecosystemContainer.appendChild(chickDiv);
+                }
+                
+                // 显示小鹰（如果存在）
+                if (this.organisms.eagle.chicks > 0) {
+                    const eagleChickDiv = document.createElement('div');
+                    eagleChickDiv.className = 'organism';
+                    eagleChickDiv.innerHTML = `
+                        <div class="organism-img">🦅</div>
+                        <div class="organism-name">小鹰</div>
+                        <div class="organism-count">${this.organisms.eagle.chicks}</div>
+                    `;
+                    ecosystemContainer.appendChild(eagleChickDiv);
+                }
+                
+                // 如果没有生物，显示提示
+                if (ecosystemContainer.children.length === 0) {
+                    ecosystemContainer.innerHTML = '<div class="empty-message">从右侧生物库中选择生物添加到生态系统中</div>';
+                }
+            }
+            
+            // 更新图表
+            updateCharts() {
+                const maxCounts = {
+                    grass: Math.max(1, ...this.ecosystemHistory.map(h => h.grass || 0)),
+                    aphid: Math.max(1, ...this.ecosystemHistory.map(h => h.aphid || 0)),
+                    ladybug: Math.max(1, ...this.ecosystemHistory.map(h => h.ladybug || 0)),
+                    chicken: Math.max(1, ...this.ecosystemHistory.map(h => h.chicken || 0)),
+                    eagle: Math.max(1, ...this.ecosystemHistory.map(h => h.eagle || 0))
+                };
+                
+                // 更新每个生物的图表
+                const organisms = ['grass', 'aphid', 'ladybug', 'chicken', 'eagle'];
+                organisms.forEach(organism => {
+                    const bar = document.getElementById(`${organism}Bar`);
+                    const count = this.organisms[organism].count || 0;
+                    const maxCount = maxCounts[organism];
+                    const percentage = Math.min(100, (count / maxCount) * 100);
+                    
+                    bar.style.height = `${percentage}%`;
+                    
+                    // 更新数值
+                    const valueElement = bar.querySelector('.chart-bar-value');
+                    if (valueElement) {
+                        valueElement.textContent = count;
+                    }
+                });
+            }
+            
+            // 记录历史
+            recordHistory() {
+                const currentState = {
+                    day: this.day,
+                    grass: this.organisms.grass.count,
+                    aphid: this.organisms.aphid.count,
+                    ladybug: this.organisms.ladybug.count,
+                    chicken: this.organisms.chicken.count,
+                    eagle: this.organisms.eagle.count
+                };
+                
+                this.ecosystemHistory.push(currentState);
+                
+                // 只保留最近100天的历史
+                if (this.ecosystemHistory.length > 100) {
+                    this.ecosystemHistory.shift();
+                }
+            }
+            
+            // 开始模拟
+            startSimulation() {
+                if (this.isSimulating) {
+                    // 暂停模拟
+                    this.stopSimulation();
+                    return;
+                }
+                
+                // 检查是否有生物
+                const totalOrganisms = Object.values(this.organisms).reduce((sum, org) => sum + org.count, 0);
+                if (totalOrganisms === 0) {
+                    alert('请先添加一些生物到生态系统！');
+                    return;
+                }
+                
+                this.isSimulating = true;
+                document.getElementById('startSimulation').textContent = '暂停模拟';
+                
+                // 获取当前模拟速度
+                this.simulationSpeed = parseInt(document.getElementById('speedSlider').value);
+                
+                // 开始模拟循环
+                this.simulationInterval = setInterval(() => {
+                    this.simulateDay();
+                    
+                    // 检查是否结束
+                    if (this.day >= this.maxDays || this.checkEcosystemCollapse()) {
+                        this.stopSimulation();
+                        this.determineSystemStatus();
+                        this.showCollapseNotification();
+                    }
+                }, this.simulationSpeed);
+                
+                if (this.debug) console.log('模拟已开始');
+            }
+            
+            // 停止模拟
+            stopSimulation() {
+                this.isSimulating = false;
+                if (this.simulationInterval) {
+                    clearInterval(this.simulationInterval);
+                    this.simulationInterval = null;
+                }
+                document.getElementById('startSimulation').textContent = '继续模拟';
+                
+                if (this.debug) console.log('模拟已停止');
+            }
+            
+            // 模拟一天
+            simulateDay() {
+                this.day++;
+                document.getElementById('dayCounter').textContent = `第 ${this.day} 天`;
+                
+                // 保存当天活动记录
+                const dayEvents = [];
+                
+                // 保存前一天的生物数量
+                const prevCounts = {
+                    grass: this.organisms.grass.count,
+                    aphid: this.organisms.aphid.count,
+                    ladybug: this.organisms.ladybug.count,
+                    chicken: this.organisms.chicken.count,
+                    eagle: this.organisms.eagle.count
+                };
+                
+                // 1. 草的生长和恢复
+                this.simulateGrass(dayEvents);
+                
+                // 2. 蚜虫的行为
+                this.simulateAphids(dayEvents);
+                
+                // 3. 瓢虫的行为
+                this.simulateLadybugs(dayEvents);
+                
+                // 4. 鸡的行为
+                this.simulateChickens(dayEvents);
+                
+                // 5. 老鹰的行为
+                this.simulateEagles(dayEvents);
+                
+                // 6. 处理饥饿死亡 - 修改为条件死亡
+                this.handleStarvation(dayEvents);
+                
+                // 将当天活动记录添加到历史
+                if (dayEvents.length > 0) {
+                    this.historyEvents.push({
+                        day: this.day,
+                        events: [...dayEvents]
+                    });
+                } else {
+                    this.historyEvents.push({
+                        day: this.day,
+                        events: ["今天没有发生特殊事件。"]
+                    });
+                }
+                
+                // 只保留最近50天的历史记录
+                if (this.historyEvents.length > 50) {
+                    this.historyEvents.shift();
+                }
+                
+                // 更新UI
+                this.updateUI();
+                
+                // 更新每日活动记录
+                this.updateDailyEvents();
+                
+                // 检查生态系统是否崩溃
+                if (this.checkEcosystemCollapse()) {
+                    this.collapseDay = this.day;
+                }
+            }
+            
+            // 模拟草的生长
+            simulateGrass(dayEvents) {
+                // 每株草每天恢复1-5点健康值
+                let totalRecovery = 0;
+                for (let i = 0; i < this.organisms.grass.health.length; i++) {
+                    if (this.organisms.grass.health[i] > 0) {
+                        const recovery = Math.floor(Math.random() * 5) + 1;
+                        this.organisms.grass.health[i] = Math.min(100, this.organisms.grass.health[i] + recovery);
+                        totalRecovery += recovery;
+                    }
+                }
+                
+                if (totalRecovery > 0) {
+                    dayEvents.push(`🌿 草恢复了 ${totalRecovery} 点健康值`);
+                }
+                
+                // 草的繁殖
+                let newGrassCount = 0;
+                if (this.day % 14 === 0) {
+                    // 健康值≥70的草每14天翻倍
+                    const healthyGrass = this.organisms.grass.health.filter(h => h >= 70).length;
+                    if (healthyGrass > 0 && this.organisms.grass.count < 1000) {
+                        for (let i = 0; i < Math.min(healthyGrass, 100); i++) {
+                            this.organisms.grass.count++;
+                            this.organisms.grass.health.push(100);
+                            newGrassCount++;
+                        }
+                        if (newGrassCount > 0) {
+                            dayEvents.push(`🌿 ${newGrassCount} 株草繁殖了新的草`);
+                        }
+                    }
+                } else if (this.day % 30 === 0) {
+                    // 健康值50-69的草每30天翻倍
+                    const mediumGrass = this.organisms.grass.health.filter(h => h >= 50 && h < 70).length;
+                    if (mediumGrass > 0 && this.organisms.grass.count < 1000) {
+                        for (let i = 0; i < Math.min(mediumGrass, 50); i++) {
+                            this.organisms.grass.count++;
+                            this.organisms.grass.health.push(100);
+                            newGrassCount++;
+                        }
+                        if (newGrassCount > 0) {
+                            dayEvents.push(`🌿 ${newGrassCount} 株草繁殖了新的草`);
+                        }
+                    }
+                } else if (this.day % 60 === 0) {
+                    // 健康值30-49的草每60天翻倍
+                    const weakGrass = this.organisms.grass.health.filter(h => h >= 30 && h < 50).length;
+                    if (weakGrass > 0 && this.organisms.grass.count < 1000) {
+                        for (let i = 0; i < Math.min(weakGrass, 20); i++) {
+                            this.organisms.grass.count++;
+                            this.organisms.grass.health.push(100);
+                            newGrassCount++;
+                        }
+                        if (newGrassCount > 0) {
+                            dayEvents.push(`🌿 ${newGrassCount} 株草繁殖了新的草`);
+                        }
+                    }
+                }
+            }
+            
+            // 模拟蚜虫
+            simulateAphids(dayEvents) {
+                // 蚜虫对草造成的伤害
+                let grassDamage = 0;
+                let grassDied = 0;
+                
+                // 每只蚜虫每天对1株草造成1点伤害
+                for (let i = 0; i < this.organisms.aphid.count; i++) {
+                    if (this.organisms.grass.count > 0) {
+                        // 随机选择一株草
+                        const grassIndex = Math.floor(Math.random() * this.organisms.grass.health.length);
+                        if (this.organisms.grass.health[grassIndex] > 0) {
+                            this.organisms.grass.health[grassIndex] -= 1;
+                            grassDamage++;
+                            
+                            // 如果草的健康值降为0，则死亡
+                            if (this.organisms.grass.health[grassIndex] <= 0) {
+                                this.organisms.grass.count--;
+                                this.organisms.grass.health.splice(grassIndex, 1);
+                                grassDied++;
+                            }
+                        }
+                    }
+                }
+                
+                if (grassDamage > 0) {
+                    dayEvents.push(`🐛 ${this.organisms.aphid.count} 只蚜虫对 ${grassDamage} 株草造成了伤害`);
+                }
+                if (grassDied > 0) {
+                    dayEvents.push(`🌿 ${grassDied} 株草被蚜虫吃死了`);
+                }
+                
+                // 蚜虫繁殖（每只每天繁殖0-2只）
+                let newAphids = 0;
+                if (this.organisms.grass.count > 0 && this.organisms.aphid.count > 0 && this.organisms.aphid.count < 1000) {
+                    newAphids = Math.floor(this.organisms.aphid.count * Math.random() * 2);
+                    this.organisms.aphid.count += newAphids;
+                    if (newAphids > 0) {
+                        dayEvents.push(`🐛 蚜虫繁殖了 ${newAphids} 只后代`);
+                    }
+                }
+            }
+            
+            // 模拟瓢虫
+            simulateLadybugs(dayEvents) {
+                // 瓢虫捕食蚜虫（每天每只瓢虫捕食10-20只蚜虫）
+                let aphidsEaten = 0;
+                if (this.organisms.aphid.count > 0 && this.organisms.ladybug.count > 0) {
+                    const aphidsPerLadybug = Math.floor(Math.random() * 11) + 10; // 10-20只
+                    aphidsEaten = Math.min(this.organisms.aphid.count, this.organisms.ladybug.count * aphidsPerLadybug);
+                    this.organisms.aphid.count = Math.max(0, this.organisms.aphid.count - aphidsEaten);
+                    
+                    if (aphidsEaten > 0) {
+                        dayEvents.push(`🐞 ${this.organisms.ladybug.count} 只瓢虫吃掉了 ${aphidsEaten} 只蚜虫`);
+                    }
+                }
+                
+                // 瓢虫繁殖（每30天繁殖一次）
+                let newEggs = 0;
+                if (this.day % 30 === 0 && this.organisms.ladybug.count > 0 && this.organisms.ladybug.count < 500) {
+                    if (this.organisms.aphid.count > 0) { // 只有有食物时才繁殖
+                        newEggs = this.organisms.ladybug.count * (Math.floor(Math.random() * 3) + 1); // 1-3个卵
+                        this.organisms.ladybug.eggs += newEggs;
+                        this.organisms.ladybug.hatchDays = 3;
+                        dayEvents.push(`🐞 瓢虫产下了 ${newEggs} 个卵，将在3天后孵化`);
+                    }
+                }
+                
+                // 瓢虫卵孵化
+                if (this.organisms.ladybug.hatchDays > 0) {
+                    this.organisms.ladybug.hatchDays--;
+                    if (this.organisms.ladybug.hatchDays === 0 && this.organisms.ladybug.eggs > 0) {
+                        dayEvents.push(`🐞 ${this.organisms.ladybug.eggs} 个瓢虫卵孵化成了瓢虫`);
+                        this.organisms.ladybug.count += this.organisms.ladybug.eggs;
+                        this.organisms.ladybug.eggs = 0;
+                    }
+                }
+            }
+            
+            // 模拟鸡
+            simulateChickens(dayEvents) {
+                if (this.organisms.chicken.count > 0) {
+                    // 每只鸡每天需要50-100只蚜虫 + 1-3只瓢虫
+                    const requiredAphids = this.organisms.chicken.count * (Math.floor(Math.random() * 51) + 50);
+                    const requiredLadybugs = this.organisms.chicken.count * (Math.floor(Math.random() * 3) + 1);
+                    
+                    // 消耗蚜虫
+                    let aphidsEaten = 0;
+                    let ladybugsEaten = 0;
+                    
+                    if (this.organisms.aphid.count >= requiredAphids) {
+                        aphidsEaten = requiredAphids;
+                        this.organisms.aphid.count -= requiredAphids;
+                    } else {
+                        aphidsEaten = this.organisms.aphid.count;
+                        this.organisms.aphid.count = 0;
+                    }
+                    
+                    // 消耗瓢虫
+                    if (this.organisms.ladybug.count >= requiredLadybugs) {
+                        ladybugsEaten = requiredLadybugs;
+                        this.organisms.ladybug.count -= requiredLadybugs;
+                    } else {
+                        ladybugsEaten = this.organisms.ladybug.count;
+                        this.organisms.ladybug.count = 0;
+                    }
+                    
+                    if (aphidsEaten > 0 || ladybugsEaten > 0) {
+                        let foodMessage = `🐔 ${this.organisms.chicken.count} 只鸡吃掉了`;
+                        if (aphidsEaten > 0) foodMessage += ` ${aphidsEaten} 只蚜虫`;
+                        if (aphidsEaten > 0 && ladybugsEaten > 0) foodMessage += ' 和';
+                        if (ladybugsEaten > 0) foodMessage += ` ${ladybugsEaten} 只瓢虫`;
+                        dayEvents.push(foodMessage);
+                    }
+                    
+                    // 鸡下蛋（每天每只鸡有50%概率下一个蛋）
+                    let eggsLaid = 0;
+                    if (aphidsEaten + ladybugsEaten > 0) { // 只有吃了食物才可能下蛋
+                        eggsLaid = Math.floor(this.organisms.chicken.count * 0.5);
+                        this.organisms.chicken.eggs += eggsLaid;
+                        if (eggsLaid > 0) {
+                            dayEvents.push(`🥚 鸡产下了 ${eggsLaid} 个鸡蛋`);
+                        }
+                    }
+                    
+                    // 鸡蛋孵化
+                    if (this.organisms.chicken.hatchDays > 0) {
+                        this.organisms.chicken.hatchDays--;
+                        if (this.organisms.chicken.hatchDays === 0 && this.organisms.chicken.eggs > 0) {
+                            dayEvents.push(`🐣 ${this.organisms.chicken.eggs} 个鸡蛋孵化成了小鸡`);
+                            this.organisms.chicken.chicks += this.organisms.chicken.eggs;
+                            this.organisms.chicken.eggs = 0;
+                            this.organisms.chicken.hatchDays = 21; // 重置孵化计时
+                        }
+                    } else if (this.organisms.chicken.eggs > 0) {
+                        this.organisms.chicken.hatchDays = 21;
+                        dayEvents.push(`🥚 ${this.organisms.chicken.eggs} 个鸡蛋开始孵化，将在21天后孵化`);
+                    }
+                    
+                    // 小鸡生长
+                    if (this.organisms.chicken.chicks > 0) {
+                        this.organisms.chicken.growthDays++;
+                        if (this.organisms.chicken.growthDays >= 150) {
+                            // 小鸡长大，可以繁殖
+                            dayEvents.push(`🐔 ${this.organisms.chicken.chicks} 只小鸡长大了，可以繁殖了`);
+                            this.organisms.chicken.count += this.organisms.chicken.chicks;
+                            this.organisms.chicken.chicks = 0;
+                            this.organisms.chicken.growthDays = 0;
+                        }
+                    }
+                }
+            }
+            
+            // 模拟老鹰
+            simulateEagles(dayEvents) {
+                if (this.organisms.eagle.count > 0) {
+                    // 老鹰吃鸡（1只鸡可供1只老鹰吃3天）
+                    const requiredChickens = Math.ceil(this.organisms.eagle.count / 3);
+                    
+                    let chickensEaten = 0;
+                    let eggsEaten = 0;
+                    
+                    if (this.organisms.chicken.count >= requiredChickens) {
+                        chickensEaten = requiredChickens;
+                        this.organisms.chicken.count -= requiredChickens;
+                        dayEvents.push(`🦅 ${this.organisms.eagle.count} 只老鹰吃掉了 ${chickensEaten} 只鸡`);
+                    } else {
+                        // 鸡不足，吃鸡蛋
+                        chickensEaten = this.organisms.chicken.count;
+                        this.organisms.chicken.count = 0;
+                        
+                        if (chickensEaten > 0) {
+                            dayEvents.push(`🦅 ${this.organisms.eagle.count} 只老鹰吃掉了 ${chickensEaten} 只鸡`);
+                        }
+                        
+                        // 计算需要消耗的鸡蛋
+                        const remainingChickens = requiredChickens - chickensEaten;
+                        const requiredEggs = remainingChickens * 5; // 假设1只鸡相当于5个鸡蛋
+                        
+                        if (this.organisms.chicken.eggs >= requiredEggs) {
+                            eggsEaten = requiredEggs;
+                            this.organisms.chicken.eggs -= requiredEggs;
+                            dayEvents.push(`🦅 老鹰还吃掉了 ${eggsEaten} 个鸡蛋`);
+                        } else {
+                            eggsEaten = this.organisms.chicken.eggs;
+                            this.organisms.chicken.eggs = 0;
+                            if (eggsEaten > 0) {
+                                dayEvents.push(`🦅 老鹰还吃掉了 ${eggsEaten} 个鸡蛋`);
+                            }
+                        }
+                    }
+                    
+                    // 老鹰繁殖（每年繁殖一次）
+                    if (this.day % 365 === 0 && this.organisms.eagle.count > 0 && this.organisms.eagle.count < 50) {
+                        if (this.organisms.chicken.count > 0) { // 只有有食物时才繁殖
+                            const newEggs = this.organisms.eagle.count * (Math.floor(Math.random() * 2) + 1); // 1-2个卵
+                            this.organisms.eagle.eggs += newEggs;
+                            this.organisms.eagle.hatchDays = 150;
+                            dayEvents.push(`🦅 老鹰产下了 ${newEggs} 个卵，将在150天后孵化`);
+                        }
+                    }
+                    
+                    // 老鹰蛋孵化
+                    if (this.organisms.eagle.hatchDays > 0) {
+                        this.organisms.eagle.hatchDays--;
+                        if (this.organisms.eagle.hatchDays === 0 && this.organisms.eagle.eggs > 0) {
+                            dayEvents.push(`🦅 ${this.organisms.eagle.eggs} 个老鹰卵孵化成了小鹰`);
+                            this.organisms.eagle.chicks += this.organisms.eagle.eggs;
+                            this.organisms.eagle.eggs = 0;
+                            this.organisms.eagle.growthDays = 150;
+                        }
+                    }
+                    
+                    // 小鹰生长
+                    if (this.organisms.eagle.chicks > 0) {
+                        this.organisms.eagle.growthDays++;
+                        if (this.organisms.eagle.growthDays >= 150) {
+                            // 小鹰长大
+                            dayEvents.push(`🦅 ${this.organisms.eagle.chicks} 只小鹰长大了`);
+                            this.organisms.eagle.count += this.organisms.eagle.chicks;
+                            this.organisms.eagle.chicks = 0;
+                            this.organisms.eagle.growthDays = 0;
+                        }
+                    }
+                }
+            }
+            
+            // 处理饥饿死亡 - 修改为条件死亡
+            handleStarvation(dayEvents) {
+                // 蚜虫死亡条件：草的数量为0
+                if (this.organisms.aphid.count > 0 && this.organisms.grass.count === 0) {
+                    const deadAphids = this.organisms.aphid.count; // 全部死亡
+                    this.organisms.aphid.count = 0;
+                    if (deadAphids > 0) {
+                        dayEvents.push(`💀 没有草可吃，所有 ${deadAphids} 只蚜虫死亡`);
+                    }
+                }
+                
+                // 瓢虫死亡条件：蚜虫数量为0
+                if (this.organisms.ladybug.count > 0 && this.organisms.aphid.count === 0) {
+                    const deadLadybugs = this.organisms.ladybug.count; // 全部死亡
+                    this.organisms.ladybug.count = 0;
+                    if (deadLadybugs > 0) {
+                        dayEvents.push(`💀 没有蚜虫可吃，所有 ${deadLadybugs} 只瓢虫死亡`);
+                    }
+                }
+                
+                // 鸡死亡条件：蚜虫、瓢虫数量都为0
+                if (this.organisms.chicken.count > 0 && 
+                    this.organisms.aphid.count === 0 && 
+                    this.organisms.ladybug.count === 0) {
+                    const deadChickens = this.organisms.chicken.count; // 全部死亡
+                    this.organisms.chicken.count = 0;
+                    if (deadChickens > 0) {
+                        dayEvents.push(`💀 没有蚜虫和瓢虫可吃，所有 ${deadChickens} 只鸡死亡`);
+                    }
+                }
+                
+                // 老鹰死亡条件：鸡、鸡蛋数量都为0
+                if (this.organisms.eagle.count > 0 && 
+                    this.organisms.chicken.count === 0 && 
+                    this.organisms.chicken.eggs === 0) {
+                    const deadEagles = this.organisms.eagle.count; // 全部死亡
+                    this.organisms.eagle.count = 0;
+                    if (deadEagles > 0) {
+                        dayEvents.push(`💀 没有鸡和鸡蛋可吃，所有 ${deadEagles} 只老鹰死亡`);
+                    }
+                }
+            }
+            
+            // 检查生态系统是否崩溃 - 修改后的条件
+            checkEcosystemCollapse() {
+                // 条件1：生产者（草）全部死亡
+                if (this.organisms.grass.count === 0) {
+                    this.collapseReason = "生产者（草）全部死亡，生态系统失去能量来源。";
+                    return true;
+                }
+                
+                // 条件2：消费者全部死亡
+                if (this.organisms.aphid.count === 0 && 
+                    this.organisms.ladybug.count === 0 && 
+                    this.organisms.chicken.count === 0 && 
+                    this.organisms.eagle.count === 0) {
+                    this.collapseReason = "所有消费者死亡，生态系统失去生物多样性。";
+                    return true;
+                }
+                
+                return false;
+            }
+            
+            // 确定系统状态
+            determineSystemStatus() {
+                const statusElement = document.getElementById('systemStatus');
+                const collapseElement = document.getElementById('collapseEstimate');
+                const stabilityElement = document.getElementById('stability');
+                
+                if (this.collapseDay > 0) {
+                    // 生态系统崩溃
+                    statusElement.className = 'info-text info-collapse';
+                    statusElement.textContent = '生态系统崩溃';
+                    collapseElement.textContent = `${this.collapseDay} 天`;
+                    stabilityElement.textContent = '不稳定';
+                } else if (this.day >= this.maxDays) {
+                    // 生态系统稳定
+                    statusElement.className = 'info-text info-stable';
+                    statusElement.textContent = '生态系统稳定';
+                    collapseElement.textContent = '>1000 天';
+                    stabilityElement.textContent = '稳定';
+                    this.systemStable = true;
+                } else {
+                    // 模拟进行中
+                    statusElement.className = 'info-text info-stable';
+                    statusElement.textContent = '模拟进行中';
+                    collapseElement.textContent = '- 天';
+                    stabilityElement.textContent = '评估中';
+                }
+            }
+            
+            // 显示崩溃通知
+            showCollapseNotification() {
+                if (this.collapseDay > 0) {
+                    document.getElementById('collapseReason').textContent = this.collapseReason;
+                    document.getElementById('collapseNotification').style.display = 'block';
+                    document.getElementById('collapseOverlay').style.display = 'block';
+                }
+            }
+            
+            // 隐藏崩溃通知
+            hideCollapseNotification() {
+                document.getElementById('collapseNotification').style.display = 'none';
+                document.getElementById('collapseOverlay').style.display = 'none';
+            }
+            
+            // 更新每日活动记录显示
+            updateDailyEvents() {
+                const eventsList = document.getElementById('dailyEventsList');
+                eventsList.innerHTML = '';
+                
+                // 如果没有历史记录，显示默认消息
+                if (this.historyEvents.length === 0) {
+                    const eventItem = document.createElement('div');
+                    eventItem.className = 'event-item';
+                    eventItem.innerHTML = `
+                        <div class="event-day">第 0 天</div>
+                        <div class="event-text">生态系统尚未开始模拟，请添加生物后点击"开始模拟"按钮。</div>
+                    `;
+                    eventsList.appendChild(eventItem);
+                } else {
+                    // 显示所有历史活动记录（从最新到最旧）
+                    for (let i = this.historyEvents.length - 1; i >= 0; i--) {
+                        const dayRecord = this.historyEvents[i];
+                        const eventItem = document.createElement('div');
+                        eventItem.className = 'event-item';
+                        
+                        let eventsHTML = `<div class="event-day">第 ${dayRecord.day} 天</div>`;
+                        dayRecord.events.forEach(event => {
+                            eventsHTML += `<div class="event-text">• ${event}</div>`;
+                        });
+                        
+                        eventItem.innerHTML = eventsHTML;
+                        eventsList.appendChild(eventItem);
+                    }
+                }
+                
+                // 滚动到顶部，显示最新的记录
+                eventsList.scrollTop = 0;
+            }
+            
+            // 分析生态系统崩溃原因
+            analyzeEcosystem() {
+                const analysisPanel = document.getElementById('analysisPanel');
+                const analysisText = document.getElementById('analysisText');
+                
+                if (this.day === 0) {
+                    analysisText.textContent = '请先运行模拟，然后点击"原因分析"按钮查看结果。';
+                    analysisPanel.classList.remove('hidden');
+                    return;
+                }
+                
+                let analysis = '';
+                
+                if (this.collapseDay > 0) {
+                    // 生态系统崩溃的原因分析
+                    analysis = '生态系统崩溃原因分析：';
+                    analysis += this.collapseReason;
+                    
+                    // 详细分析崩溃原因
+                    if (this.organisms.grass.count === 0) {
+                        analysis += '\n\n详细过程：';
+                        analysis += '\n1. 生产者（草）全部死亡';
+                        analysis += '\n2. 草死亡后，蚜虫没有食物，全部死亡';
+                        analysis += '\n3. 蚜虫死亡后，瓢虫没有食物，全部死亡';
+                        analysis += '\n4. 蚜虫和瓢虫都死亡后，鸡没有食物，全部死亡';
+                        analysis += '\n5. 鸡和鸡蛋都死亡后，老鹰没有食物，全部死亡';
+                        analysis += '\n6. 最终生态系统崩溃';
+                    } else if (this.organisms.aphid.count === 0 && 
+                              this.organisms.ladybug.count === 0 && 
+                              this.organisms.chicken.count === 0 && 
+                              this.organisms.eagle.count === 0) {
+                        analysis += '\n\n详细过程：';
+                        analysis += '\n1. 所有消费者死亡，生态系统失去生物多样性';
+                        analysis += '\n2. 虽然草还在，但缺少消费者，生态系统的物质循环被破坏';
+                        analysis += '\n3. 最终生态系统崩溃';
+                    }
+                } else if (this.systemStable) {
+                    // 生态系统稳定的原因分析
+                    analysis = '生态系统保持稳定的原因：各种生物数量保持动态平衡。';
+                    
+                    if (this.organisms.grass.count > 0) {
+                        analysis += ' 草的数量适中，为食物链提供了良好基础。';
+                    }
+                    
+                    if (this.organisms.aphid.count > 0 && this.organisms.aphid.count < 500) {
+                        analysis += ' 蚜虫数量适中，既能为上级消费者提供食物，又不会过度消耗草。';
+                    }
+                    
+                    if (this.organisms.ladybug.count > 0 && this.organisms.aphid.count > 0) {
+                        analysis += ' 瓢虫有效控制了蚜虫的数量。';
+                    }
+                    
+                    if (this.organisms.chicken.count > 0 && (this.organisms.aphid.count > 0 || this.organisms.ladybug.count > 0)) {
+                        analysis += ' 鸡的食物来源充足。';
+                    }
+                    
+                    if (this.organisms.eagle.count > 0 && this.organisms.chicken.count > 0) {
+                        analysis += ' 老鹰的食物来源充足。';
+                    }
+                } else {
+                    analysis = '模拟尚未完成，请继续运行模拟或重置系统。';
+                }
+                
+                analysisText.textContent = analysis;
+                analysisPanel.classList.remove('hidden');
+            }
+        }
+
+        // 初始化应用
+        document.addEventListener('DOMContentLoaded', function() {
+            let simulator = null;
+            
+            // 初始化模拟器
+            function initSimulator() {
+                if (simulator) {
+                    simulator.reset();
+                } else {
+                    simulator = new EcosystemSimulator();
+                }
+                return simulator;
+            }
+            
+            // 确保模拟器被初始化
+            simulator = initSimulator();
+            
+            // 为所有增加/减少按钮添加事件监听器
+            document.querySelectorAll('.count-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const organismType = this.getAttribute('data-type');
+                    const input = document.getElementById(`${organismType}Count`);
+                    let value = parseInt(input.value) || 0;
+                    
+                    if (this.classList.contains('increase')) {
+                        value = Math.min(1000, value + 1);
+                    } else if (this.classList.contains('decrease')) {
+                        value = Math.max(0, value - 1);
+                    }
+                    
+                    input.value = value;
+                });
+            });
+            
+            // 为所有添加按钮添加事件监听器
+            document.querySelectorAll('.btn-add').forEach(button => {
+                button.addEventListener('click', function() {
+                    const organismType = this.getAttribute('data-type');
+                    const input = document.getElementById(`${organismType}Count`);
+                    const count = parseInt(input.value) || 0;
+                    
+                    if (count > 0) {
+                        simulator.addOrganism(organismType, count);
+                        input.value = 0; // 重置输入框
+                    } else {
+                        alert(`请为${getOrganismName(organismType)}设置一个大于0的数量！`);
+                    }
+                });
+            });
+            
+            // 获取生物名称
+            function getOrganismName(type) {
+                switch(type) {
+                    case 'grass': return '草';
+                    case 'aphid': return '蚜虫';
+                    case 'ladybug': return '瓢虫';
+                    case 'chicken': return '鸡';
+                    case 'eagle': return '老鹰';
+                    default: return '生物';
+                }
+            }
+            
+            // 开始模拟按钮
+            document.getElementById('startSimulation').addEventListener('click', function() {
+                if (!simulator) simulator = initSimulator();
+                simulator.startSimulation();
+            });
+            
+            // 重置按钮
+            document.getElementById('resetSimulation').addEventListener('click', function() {
+                if (!simulator) simulator = initSimulator();
+                simulator.reset();
+            });
+            
+            // 分析按钮
+            document.getElementById('analyzeResult').addEventListener('click', function() {
+                if (!simulator) simulator = initSimulator();
+                simulator.analyzeEcosystem();
+            });
+            
+            // 速度控制滑块
+            const speedSlider = document.getElementById('speedSlider');
+            const speedValue = document.getElementById('speedValue');
+            
+            speedSlider.addEventListener('input', function() {
+                const value = this.value;
+                speedValue.textContent = `${value}ms/天`;
+                
+                // 如果模拟正在进行中，更新速度
+                if (simulator && simulator.isSimulating) {
+                    simulator.stopSimulation();
+                    simulator.simulationSpeed = parseInt(value);
+                    simulator.startSimulation();
+                }
+            });
+            
+            // 关闭崩溃通知按钮
+            document.getElementById('collapseClose').addEventListener('click', function() {
+                simulator.hideCollapseNotification();
+            });
+            
+            // 点击遮罩层关闭崩溃通知
+            document.getElementById('collapseOverlay').addEventListener('click', function() {
+                simulator.hideCollapseNotification();
+            });
+            
+            // 初始化UI
+            simulator.updateUI();
+            
+            console.log('生态系统模拟器（小学科学版）已初始化完成');
+        });
+    </script>
+</body>
+</html>
